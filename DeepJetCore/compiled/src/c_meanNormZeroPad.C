@@ -48,10 +48,6 @@ void priv_process(boost::python::numeric::array numpyarray,
         const boost::python::list lmaxs,
         std::string filename, enum modeen mode);
 
-
-
-
-
 /*
  * wrapper to create input to C++ only function
  * Can be generalised to doing it at the same time for many different sized branches
