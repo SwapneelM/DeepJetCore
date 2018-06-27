@@ -9,4 +9,4 @@ in a virtual environment such as one provided by Anaconda.
 Refer to the `README <https://github.com/DL4Jets/DeepJetCore>`_ 
 for installation and usage instructions
 
-`The source for this project is available on Github <https://github.com/pypa/sampleproject>`_.
+`The source for this project is available on Github <https://github.com/SwapneelM/DeepJetCore>`_.
