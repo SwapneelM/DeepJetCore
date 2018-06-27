@@ -8,27 +8,27 @@ from subprocess import call
 from multiprocessing import cpu_count
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-print "\nBasepath: ", BASEPATH
+print ("\nBasepath: ", BASEPATH)
 
 # Path to the `DeepJetCore` folder within the package
 # DEEPJETCORE = os.path.join(BASEPATH, 'DeepJetCore')
 DEEPJETCORE = './DeepJetCore'
-print "\nDeepjetcore: ", DEEPJETCORE
+print ("\nDeepjetcore: ", DEEPJETCORE)
 
 # Path to the `compiled` folder within `DeepJetCore`
 COMPILEPATH = os.path.join(DEEPJETCORE, 'compiled')
-print "\Compile Path: ", COMPILEPATH
+print ("\Compile Path: ", COMPILEPATH)
 
 # Path to the `interface` folder within `DeepJetCore/compiled`
 INTERFACEPATH = os.path.join(COMPILEPATH, 'interface')
-print "\Compile Path: ", INTERFACEPATH
+print ("\Compile Path: ", INTERFACEPATH)
 
 # Exporting the value to a variable for use to set paths
 CONDA_PREFIX = os.environ['CONDA_PREFIX']
 
 # Path to configuration files required to build some of the extensions
 PYCONFIG_PATH = os.path.join(
-    CONDA_PREFIX, 'lib', 'python2.7', 'config')
+    CONDA_PREFIX, 'lib', 'python3.6', 'config-3.6m-x86_64-linux-gnum')
 '''
 if os.environ['PYTHON_VERSION']:
     PYCONFIG_PATH = os.path.join(
@@ -44,14 +44,14 @@ cmd = [
 try:
     cmd.append('-j%d' % cpu_count())
 except NotImplementedError:
-    print 'Unable to determine number of CPUs. \
-    Using single threaded make.'
+    print ('Unable to determine number of CPUs. \
+    Using single threaded make.')
 options = [
     '--directory=' + COMPILEPATH,
     '--makefile=Makefile',
 ]
 cmd.extend(options)
-print "\n\n" + str(cmd) + "\n\n"
+print ("\n\n" + str(cmd) + "\n\n")
 
 
 class DeepJetCoreBuildExt(build_ext):
@@ -64,7 +64,7 @@ class DeepJetCoreBuildExt(build_ext):
         # run original build code
         # print "\n\n\n*****running original DeepJetCore build_py*****\n\n\n"
         build_ext.run(self)
-        print "\n\n*********running custom build_py***********\n\n"
+        print ("\n\n*********running custom build_py***********\n\n")
         call(cmd)
 
 
@@ -176,7 +176,7 @@ c_meanNormZeroPad = Extension(
                           'c_meanNormZeroPad.c')],
     include_dirs=module_lib_dirs,
     runtime_library_dirs=[boost_include_dirs],
-    libraries=['boost_python', 'python2.7'])
+    libraries=['boost_python', 'python3.6m'])
 
 c_makePlots = Extension(
     'DeepJet.compiled.c_makePlots',
@@ -215,7 +215,7 @@ c_randomSelect = Extension(
     libraries=['boost_python', 'python2.7'])
 
 setup(name='DeepJetCore',
-      version='0.0.4',
+      version='0.0.5',
       description='The DeepJetCore Library: Deep Learning \
       for High-energy Physics',
       url='https://github.com/DL4J/DeepJetCore',
@@ -235,23 +235,35 @@ setup(name='DeepJetCore',
                './DeepJetCore/bin/addPredictionLabels.py',
                './DeepJetCore/bin/convertDCtoNumpy.py',
                './DeepJetCore/bin/convertToTF.py'],
-      python_requires='~=2.7',
+      python_requires='~=3.6',
       install_requires=[
-          'cycler==0.10.0',
-          'funcsigs==1.0.2',
-          'functools32==3.2.3.post2',
-          'h5py==2.6.0',
-          'tensorflow==1.0.1',
-          'Keras==2.0.0',
-          'matplotlib==2.0.0',
-          'mock==2.0.0',
-          'pbr==2.0.0',
-          'protobuf==3.2.0',
-          'pyparsing==2.2.0',
-          'python-dateutil==2.6.0',
-          'pytz==2016.10',
-          'PyYAML==3.12',
-          'subprocess32==3.2.7'
+                'absl-py==0.2.2',
+		'astor==0.6.2',
+		'bleach==1.5.0',
+		'cycler==0.10.0',
+		'funcsigs==1.0.2',
+		'gast==0.2.0',
+		'grpcio==1.12.1',
+		'h5py==2.8.0',
+		'html5lib==0.9999999',
+		'keras==2.2.0',
+		'keras-applications==1.0.2',
+		'keras-preprocessing==1.0.1',
+		'kiwisolver==1.0.1',
+		'markdown==2.6.11',
+		'matplotlib==2.2.2',
+		'mock==2.0.0',
+		'pbr==4.0.4',
+		'protobuf==3.5.2.post1',
+		'pyparsing==2.2.0',
+		'python-dateutil==2.7.3',
+		'pytz==2018.4',
+		'pyyaml==3.12',
+		'tables==3.4.3',
+		'tensorboard==1.8.0',
+		'tensorflow==1.8.0',
+		'termcolor==1.1.0',
+		'werkzeug==0.14.1'
       ],
       include_package_data=True,
       zip_safe=False,
