@@ -1,3 +1,4 @@
+
 # location of the Python header files
  
 PYTHON_VERSION = 3.6
@@ -28,28 +29,30 @@ endif
 
 all: $(MODULES_SHARED_LIBS)
 
-#helpers
-libquicklz.so:
-	gcc -shared -O2 -fPIC src/quicklz.c -o libquicklz.so
+# helpers
+# ./quicklz.so:
+#	gcc -shared -O2 -fPIC ./src/quicklz.c -o ./quicklz.so
 
-obj/%.o: src/%.cpp
+./obj/%.o: ./src/%.cpp ./src/%.cxx
 	g++ $(CFLAGS) $(ROOTSTUFF) -I./interface -O2 -fPIC -c -o $@ $< 
     
-#pack helpers in lib
-libdeepjetcorehelpers.so: $(OBJ_FILES)
-	g++ -shared $(LINUXADD)  $(ROOTSTUFF) obj/*.o -o $@ 
+# pack helpers in lib
+./%.so: $(OBJ_FILES)
+	g++ -shared $(LINUXADD)  $(ROOTSTUFF) ./obj/*.o -o $@ 
   
 
+#<<<<<<< HEAD:DeepJetCore/compiled/Makefile
+#./%.so: %.o ./%.so
+#	g++ -shared $(LINUXADD)  $(ROOTSTUFF) ./*.so -L$(BOOST_LIB)  -lboost_python -L${CONDA_PREFIX}/lib/python$(PYTHON_VERSION)/config -lpython2.7  $< -o $(@) 
+#=======
 %.so: %.o libdeepjetcorehelpers.so libquicklz.so
 	g++ -shared $(LINUXADD)  $(ROOTSTUFF) -lquicklz -L./ -ldeepjetcorehelpers -L${CONDA_PREFIX}/lib/python$(PYTHON_VERSION)/config-3.6m-x86_64-linux-gnu -lpython3.6m  -L$(BOOST_LIB) -lboost_python $< -o $(@) 
 
 
-%.o: src/%.C 
+%.o: ./src/%.C 
 	g++   $(ROOTSTUFF) -O2 -I./interface -I$(PYTHON_INCLUDE) -I$(BOOST_INC) -fPIC -c -o $(@) $<
 
 
-clean: 
-	rm -f $(OBJ_FILES) $(SHARED_LIBS) $(MODULES_SHARED_LIBS) $(MODULES_OBJ_FILES) libdeepjetcorehelpers.so libquicklz.so
-	
-	
-	
+clean:
+	rm -f $(OBJ_FILES) $(SHARED_LIBS) $(MODULES_SHARED_LIBS) $(MODULES_OBJ_FILES) *.so
+
