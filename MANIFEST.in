@@ -5,6 +5,7 @@ include CHANGELOG.rst
 # environment setup
 include DeepJetCore/lxplus_env.sh
 include DeepJetCore/gpu_env.sh
+include DeepJetCore/new_env.sh
 
 # makefile
 include DeepJetCore/compiled/Makefile
