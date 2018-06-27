@@ -7,8 +7,8 @@ from copy import deepcopy
 
 class MultiDataCollection(object):
 	'''This class allows the simultaneous use of multiple
-DataCollections for a training, it provides the same interface
-and adds the functionality of adding Y targets as well as flags returned instead of the weights.
+DataCollections for a training, it provides the same interface 
+and adds the functionality of adding Y targets as well as flags returned instead of the weights. 
 In case of weights the flag is multiplied by the weight value
 Constructor ([infiles = None[, nprocs = -1[, add_ys = [][, flags=[]]]]])
 optional parameters:
@@ -20,15 +20,15 @@ flags: like add_ys, same rules apply. The flags gets multiplied by the event wei
 	def __init__(self, infiles = None, nprocs = -1, add_ys = [] ,flags=[]):
 		'''Constructor'''
 		self.collections = []
-		self.nprocs = nprocs
-		self.meansnormslimit=500000
+		self.nprocs = nprocs       
+		self.meansnormslimit=500000 
 		self.flags = []
 		self.generator_modifier = lambda x: x
 		self.additional_ys = []
 		if infiles:
 			self.collections = [
 				DataCollection(
-					i,
+					i, 
 					cpu_count()/len(infiles) if nprocs == -1 else nprocs/len(infiles)
 				) for i in infiles]
 		if flags:
@@ -69,31 +69,31 @@ flags: like add_ys, same rules apply. The flags gets multiplied by the event wei
 		if not all(i == shapes[0] for i in shapes):
 			raise ValueError('Input collections have different input shapes!')
 		return shapes[0]
-
+    
 	def getTruthShape(self):
 		shapes = [i.getTruthShape() for i in self.collections]
 		if not all(i == shapes[0] for i in shapes):
 			raise ValueError('Input collections have different input shapes!')
 		return shapes[0]
-
+        
 	def getNRegressionTargets(self):
 		shapes = [i.getNRegressionTargets() for i in self.collections]
 		if not all(i == shapes[0] for i in shapes):
 			raise ValueError('Input collections have different input shapes!')
 		return shapes[0]
-
+    
 	def getNClassificationTargets(self):
 		shapes = [i.getNClassificationTargets() for i in self.collections]
 		if not all(i == shapes[0] for i in shapes):
 			raise ValueError('Input collections have different input shapes!')
 		return shapes[0]
-
+        
 	def getUsedTruth(self):
 		shapes = [i.getUsedTruth() for i in self.collections]
 		if not all(i == shapes[0] for i in shapes):
 			raise ValueError('Input collections have different input shapes!')
 		return shapes[0]
-
+	
 	def split(self,ratio):
 		'splits the sample into two parts, one is kept as the new collection, the other is returned'
 		out = [i.split(ratio) for i in self.collections]
@@ -103,10 +103,10 @@ flags: like add_ys, same rules apply. The flags gets multiplied by the event wei
 
 	def writeToFile(self, fname):
 		for idx, i in enumerate(self.collections):
-			i.writeToFile(fname.replace('.dc', '%d.dc' % idx))
+			i.writeToFile(fname.replace('.dc', '%d.dc' % idx))		
 
 	def generator(self):
-		'''Batch generator. Heavily based on the DataCollection one.
+		'''Batch generator. Heavily based on the DataCollection one. 
 Adds flags on the fly at the end of each Y'''
 		generators = [i.generator() for i in self.collections]
 		flags = self.flags if self.flags else [None for i in self.collections]
@@ -126,16 +126,16 @@ Adds flags on the fly at the end of each Y'''
 					y_to_add = np.hstack([ones*i for i in template]) \
 						 if hasattr(template, '__iter__') else \
 						 ones*template
-					y.append(y_to_add)
+					y.append(y_to_add)					
 
 				#create the flags
 				if self.flags:
 					if len(flag) != len(y):
 						raise ValueError(
 							'Flags (if any) and total Y number MUST'
-							' be the same! Got: %d and %d' % (len(flag), len(y)))
+							' be the same! Got: %d and %d' % (len(flag), len(y)))				
 					w = [w[0]*i for i in flag]
-
+				
 				if xtot is None:
 					xtot = x
 					ytot = y
@@ -150,7 +150,7 @@ Adds flags on the fly at the end of each Y'''
 				yield self.generator_modifier((xtot, ytot))
 			else:
 				yield self.generator_modifier((xtot, ytot, wtot))
-
+		
 	def __len__(self):
 		return sum(len(i) for i in self.collections)
 
@@ -181,12 +181,12 @@ Adds flags on the fly at the end of each Y'''
 		return max(i.maxFilesOpen for i in self.collections)
 
 	@maxFilesOpen.setter
-	def maxFilesOpen(self, val):
+	def maxFilesOpen(self, val):		
 		for i in self.collections:
 			i.maxFilesOpen = val
 
 	def getNBatchesPerEpoch(self):
 		return sum(i.getNBatchesPerEpoch() for i in self.collections)/len(self.collections)
-
+	
 
 
