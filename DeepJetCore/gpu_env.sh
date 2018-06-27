@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 
 source activate deepjetLinux3_gpu

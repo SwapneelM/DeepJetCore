@@ -16,14 +16,13 @@ __pycache__
 *.csv
 *.root
 *.json
-*.egg
-*.egg-info
 
 # Setuptools distribution folder.
 /dist/
 
 # Python egg metadata, regenerated from source files by setuptools.
-/*.egg-info
+*.egg
+*.egg-info
 
 # Mac OS X
 .DS_Store
@@ -32,5 +31,6 @@ __pycache__
 *.swp
 
 # Build Directory
-build/
+build
+.idea
 #*.*#
