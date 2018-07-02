@@ -17,11 +17,11 @@ print ("\nDeepjetcore: ", DEEPJETCORE)
 
 # Path to the `compiled` folder within `DeepJetCore`
 COMPILEPATH = os.path.join(DEEPJETCORE, 'compiled')
-print ("\Compile Path: ", COMPILEPATH)
+print ("\nCompile Path: ", COMPILEPATH)
 
 # Path to the `interface` folder within `DeepJetCore/compiled`
 INTERFACEPATH = os.path.join(COMPILEPATH, 'interface')
-print ("\Compile Path: ", INTERFACEPATH)
+print ("\nCompile Path: ", INTERFACEPATH)
 
 # Exporting the value to a variable for use to set paths
 CONDA_PREFIX = os.environ['CONDA_PREFIX']
@@ -100,27 +100,27 @@ quicklz = Extension(
     sources=[os.path.join(COMPILEPATH, 'quicklzpy.c')])
 
 root_flags = [
-	'-pthread',
-	'-std=c++11',
-	'-Wno-deprecated-declarations',
-	'-m64',
-	'-lCore',
-	'-lRIO',
-	'-lNet',
-	'-lHist',
-	'-lGraf',
-	'-lGraf3d',
-	'-lGpad',
-	'-lTree',
-	'-lRint',
-	'-lPostscript',
-	'-lMatrix',
-	'-lPhysics',
-	'-lMathCore',
-	'-lThread',
-	'-lm',
-	'-ldl',
-	'-rdynamic',
+  '-pthread',
+  '-std=c++11',
+  '-Wno-deprecated-declarations',
+  '-m64',
+  '-lCore',
+  '-lRIO',
+  '-lNet',
+  '-lHist',
+  '-lGraf',
+  '-lGraf3d',
+  '-lGpad',
+  '-lTree',
+  '-lRint',
+  '-lPostscript',
+  '-lMatrix',
+  '-lPhysics',
+  '-lMathCore',
+  '-lThread',
+  '-lm',
+  '-ldl',
+  '-rdynamic',
 ]
 
 cpp_compiler_flags = root_flags + ['-O2', '-fPIC', '-c']
@@ -237,33 +237,33 @@ setup(name='DeepJetCore',
                './DeepJetCore/bin/convertToTF.py'],
       python_requires='~=3.6',
       install_requires=[
-                'absl-py==0.2.2',
-		'astor==0.6.2',
-		'bleach==1.5.0',
-		'cycler==0.10.0',
-		'funcsigs==1.0.2',
-		'gast==0.2.0',
-		'grpcio==1.12.1',
-		'h5py==2.8.0',
-		'html5lib==0.9999999',
-		'keras==2.2.0',
-		'keras-applications==1.0.2',
-		'keras-preprocessing==1.0.1',
-		'kiwisolver==1.0.1',
-		'markdown==2.6.11',
-		'matplotlib==2.2.2',
-		'mock==2.0.0',
-		'pbr==4.0.4',
-		'protobuf==3.5.2.post1',
-		'pyparsing==2.2.0',
-		'python-dateutil==2.7.3',
-		'pytz==2018.4',
-		'pyyaml==3.12',
-		'tables==3.4.3',
-		'tensorboard==1.8.0',
-		'tensorflow==1.8.0',
-		'termcolor==1.1.0',
-		'werkzeug==0.14.1'
+          'absl-py==0.2.2',
+          'astor==0.6.2',
+          'bleach==1.5.0',
+          'cycler==0.10.0',
+          'funcsigs==1.0.2',
+          'gast==0.2.0',
+          'grpcio==1.12.1',
+          'h5py==2.8.0',
+          'html5lib==0.9999999',
+          'keras==2.2.0',
+          'keras-applications==1.0.2',
+          'keras-preprocessing==1.0.1',
+          'kiwisolver==1.0.1',
+          'markdown==2.6.11',
+          'matplotlib==2.2.2',
+          'mock==2.0.0',
+          'pbr==4.0.4',
+          'protobuf==3.5.2.post1',
+          'pyparsing==2.2.0',
+          'python-dateutil==2.7.3',
+          'pytz==2018.4',
+          'pyyaml==3.12',
+          'tables==3.4.3',
+          'tensorboard==1.8.0',
+          'tensorflow==1.8.0',
+          'termcolor==1.1.0',
+          'werkzeug==0.14.1'
       ],
       include_package_data=True,
       zip_safe=False,
@@ -285,7 +285,8 @@ setup(name='DeepJetCore',
       },
       ext_modules=[
           quicklz,
-          ])
+      ])
+
 '''
 cpp_helper,
 cpp_indata,
