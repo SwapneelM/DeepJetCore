@@ -35,11 +35,11 @@ all: $(MODULES_SHARED_LIBS)
 
 ./obj/%.o: ./src/%.cpp ./src/%.cxx
 	g++ $(CFLAGS) $(ROOTSTUFF) -I./interface -O2 -fPIC -c -o $@ $< 
-    
+
 # pack helpers in lib
 ./%.so: $(OBJ_FILES)
 	g++ -shared $(LINUXADD)  $(ROOTSTUFF) ./obj/*.o -o $@ 
-  
+
 
 %.so: %.o libdeepjetcorehelpers.so libquicklz.so
 	g++ -shared $(LINUXADD)  $(ROOTSTUFF) -lquicklz -L./ -ldeepjetcorehelpers -L${CONDA_PREFIX}/lib/python$(PYTHON_VERSION)/config-3.6m-x86_64-linux-gnu -lpython3.6m  -L$(BOOST_LIB) -lboost_python $< -o $(@) 

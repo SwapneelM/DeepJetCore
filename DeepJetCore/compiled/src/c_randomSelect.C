@@ -5,9 +5,6 @@
  *      Author: jkiesele
  */
 
-
-
-
 #include <boost/python.hpp>
 #include "boost/python/extract.hpp"
 #include "boost/python/numeric.hpp"
