@@ -15,30 +15,6 @@
 
 #define SWIG_PYTHON_DIRECTOR_NO_VTABLE
 
-
-#ifdef __cplusplus
-/* SwigValueWrapper is described in swig.swg */
-template<typename T> class SwigValueWrapper {
-  struct SwigMovePointer {
-    T *ptr;
-    SwigMovePointer(T *p) : ptr(p) { }
-    ~SwigMovePointer() { delete ptr; }
-    SwigMovePointer& operator=(SwigMovePointer& rhs) { T* oldptr = ptr; ptr = 0; delete oldptr; ptr = rhs.ptr; rhs.ptr = 0; return *this; }
-  } pointer;
-  SwigValueWrapper& operator=(const SwigValueWrapper<T>& rhs);
-  SwigValueWrapper(const SwigValueWrapper<T>& rhs);
-public:
-  SwigValueWrapper() : pointer(0) { }
-  SwigValueWrapper& operator=(const T& t) { SwigMovePointer tmp(new T(t)); pointer = tmp; return *this; }
-  operator T&() const { return *pointer.ptr; }
-  T *operator&() { return pointer.ptr; }
-};
-
-template <typename T> T SwigValueInit() {
-  return T();
-}
-#endif
-
 /* -----------------------------------------------------------------------------
  *  This section contains generic SWIG labels for method/variable
  *  declarations/attributes, and other compiler dependent labels.
@@ -3003,12 +2979,10 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_TChain swig_types[0]
-#define SWIGTYPE_p_TString swig_types[1]
-#define SWIGTYPE_p_char swig_types[2]
-#define SWIGTYPE_p_friendTreeInjector swig_types[3]
-static swig_type_info *swig_types[5];
-static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
+#define SWIGTYPE_p_char swig_types[0]
+#define SWIGTYPE_p_class swig_types[1]
+static swig_type_info *swig_types[3];
+static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3021,439 +2995,107 @@ static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #endif
 
 /*-----------------------------------------------
-              @(target):= _friendTreeInjector.so
+              @(target):= _rocCurveCollection.so
   ------------------------------------------------*/
 #if PY_VERSION_HEX >= 0x03000000
-#  define SWIG_init    PyInit__friendTreeInjector
+#  define SWIG_init    PyInit__rocCurveCollection
 
 #else
-#  define SWIG_init    init_friendTreeInjector
+#  define SWIG_init    init_rocCurveCollection
 
 #endif
-#define SWIG_name    "_friendTreeInjector"
+#define SWIG_name    "_rocCurveCollection"
 
 #define SWIGVERSION 0x030012 
 #define SWIG_VERSION SWIGVERSION
 
 
-#define SWIG_as_voidptr(a) const_cast< void * >(static_cast< const void * >(a)) 
-#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),reinterpret_cast< void** >(a)) 
-
-
-#include <stdexcept>
-
-
-namespace swig {
-  class SwigPtr_PyObject {
-  protected:
-    PyObject *_obj;
-
-  public:
-    SwigPtr_PyObject() :_obj(0)
-    {
-    }
-
-    SwigPtr_PyObject(const SwigPtr_PyObject& item) : _obj(item._obj)
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      Py_XINCREF(_obj);      
-      SWIG_PYTHON_THREAD_END_BLOCK;
-    }
-    
-    SwigPtr_PyObject(PyObject *obj, bool initial_ref = true) :_obj(obj)
-    {
-      if (initial_ref) {
-        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-        Py_XINCREF(_obj);
-        SWIG_PYTHON_THREAD_END_BLOCK;
-      }
-    }
-    
-    SwigPtr_PyObject & operator=(const SwigPtr_PyObject& item) 
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      Py_XINCREF(item._obj);
-      Py_XDECREF(_obj);
-      _obj = item._obj;
-      SWIG_PYTHON_THREAD_END_BLOCK;
-      return *this;      
-    }
-    
-    ~SwigPtr_PyObject() 
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      Py_XDECREF(_obj);
-      SWIG_PYTHON_THREAD_END_BLOCK;
-    }
-    
-    operator PyObject *() const
-    {
-      return _obj;
-    }
-
-    PyObject *operator->() const
-    {
-      return _obj;
-    }
-  };
-}
-
-
-namespace swig {
-  struct SwigVar_PyObject : SwigPtr_PyObject {
-    SwigVar_PyObject(PyObject* obj = 0) : SwigPtr_PyObject(obj, false) { }
-    
-    SwigVar_PyObject & operator = (PyObject* obj)
-    {
-      Py_XDECREF(_obj);
-      _obj = obj;
-      return *this;      
-    }
-  };
-}
+#define SWIG_as_voidptr(a) (void *)((const void *)(a)) 
+#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
  
     #define SWIG_FILE_WITH_INIT
-    #include "friendTreeInjector.h"
+    #include "rocCurveCollection.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_new_friendTreeInjector__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  TString arg1 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  friendTreeInjector *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:new_friendTreeInjector",&obj0)) SWIG_fail;
+SWIGINTERN int Swig_var_TLatex_set(PyObject *_val) {
   {
-    res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_TString,  0  | 0);
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_friendTreeInjector" "', argument " "1"" of type '" "TString""'"); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_friendTreeInjector" "', argument " "1"" of type '" "TString""'");
+    void *argp = 0;
+    int res = SWIG_ConvertPtr(_val, &argp, SWIGTYPE_p_class,  0 );
+    if (!SWIG_IsOK(res)) {
+      SWIG_exception_fail(SWIG_ArgError(res), "in variable '""TLatex""' of type '""class""'");
+    }
+    if (!argp) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""TLatex""' of type '""class""'");
     } else {
-      TString * temp = reinterpret_cast< TString * >(argp1);
-      arg1 = *temp;
-      if (SWIG_IsNewObj(res1)) delete temp;
+      TLatex = *((class *)(argp));
     }
   }
-  result = (friendTreeInjector *)new friendTreeInjector(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_friendTreeInjector, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_friendTreeInjector__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  friendTreeInjector *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":new_friendTreeInjector")) SWIG_fail;
-  result = (friendTreeInjector *)new friendTreeInjector();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_friendTreeInjector, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_friendTreeInjector(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[2] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if (argc == 0) {
-    return _wrap_new_friendTreeInjector__SWIG_1(self, args);
-  }
-  if (argc == 1) {
-    int _v;
-    int res = SWIG_ConvertPtr(argv[0], 0, SWIGTYPE_p_TString, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      return _wrap_new_friendTreeInjector__SWIG_0(self, args);
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_friendTreeInjector'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    friendTreeInjector::friendTreeInjector(TString)\n"
-    "    friendTreeInjector::friendTreeInjector()\n");
   return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_friendTreeInjector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  friendTreeInjector *arg1 = (friendTreeInjector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_friendTreeInjector",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_friendTreeInjector, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_friendTreeInjector" "', argument " "1"" of type '" "friendTreeInjector *""'"); 
-  }
-  arg1 = reinterpret_cast< friendTreeInjector * >(argp1);
-  delete arg1;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
 fail:
-  return NULL;
+  return 1;
 }
 
 
-SWIGINTERN PyObject *_wrap_friendTreeInjector_addFromFile__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  friendTreeInjector *arg1 = (friendTreeInjector *) 0 ;
-  TString *arg2 = 0 ;
-  TString *arg3 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
+SWIGINTERN PyObject *Swig_var_TLatex_get(void) {
+  PyObject *pyobj = 0;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:friendTreeInjector_addFromFile",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_friendTreeInjector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "friendTreeInjector_addFromFile" "', argument " "1"" of type '" "friendTreeInjector *""'"); 
-  }
-  arg1 = reinterpret_cast< friendTreeInjector * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_TString,  0  | 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "friendTreeInjector_addFromFile" "', argument " "2"" of type '" "TString const &""'"); 
-  }
-  if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "friendTreeInjector_addFromFile" "', argument " "2"" of type '" "TString const &""'"); 
-  }
-  arg2 = reinterpret_cast< TString * >(argp2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_TString,  0  | 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "friendTreeInjector_addFromFile" "', argument " "3"" of type '" "TString const &""'"); 
-  }
-  if (!argp3) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "friendTreeInjector_addFromFile" "', argument " "3"" of type '" "TString const &""'"); 
-  }
-  arg3 = reinterpret_cast< TString * >(argp3);
-  (arg1)->addFromFile((TString const &)*arg2,(TString const &)*arg3);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&TLatex), SWIGTYPE_p_class,  0 );
+  return pyobj;
 }
 
 
-SWIGINTERN PyObject *_wrap_friendTreeInjector_addFromFile__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  friendTreeInjector *arg1 = (friendTreeInjector *) 0 ;
-  TString *arg2 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:friendTreeInjector_addFromFile",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_friendTreeInjector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "friendTreeInjector_addFromFile" "', argument " "1"" of type '" "friendTreeInjector *""'"); 
-  }
-  arg1 = reinterpret_cast< friendTreeInjector * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_TString,  0  | 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "friendTreeInjector_addFromFile" "', argument " "2"" of type '" "TString const &""'"); 
-  }
-  if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "friendTreeInjector_addFromFile" "', argument " "2"" of type '" "TString const &""'"); 
-  }
-  arg2 = reinterpret_cast< TString * >(argp2);
-  (arg1)->addFromFile((TString const &)*arg2);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_friendTreeInjector_addFromFile(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[4] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if (argc == 2) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_friendTreeInjector, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_TString, 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        return _wrap_friendTreeInjector_addFromFile__SWIG_1(self, args);
-      }
+SWIGINTERN int Swig_var_rocCurveCollection_set(PyObject *_val) {
+  {
+    void *argp = 0;
+    int res = SWIG_ConvertPtr(_val, &argp, SWIGTYPE_p_class,  0 );
+    if (!SWIG_IsOK(res)) {
+      SWIG_exception_fail(SWIG_ArgError(res), "in variable '""rocCurveCollection""' of type '""class""'");
+    }
+    if (!argp) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""rocCurveCollection""' of type '""class""'");
+    } else {
+      rocCurveCollection = *((class *)(argp));
     }
   }
-  if (argc == 3) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_friendTreeInjector, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_TString, 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_TString, 0);
-        _v = SWIG_CheckState(res);
-        if (_v) {
-          return _wrap_friendTreeInjector_addFromFile__SWIG_0(self, args);
-        }
-      }
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'friendTreeInjector_addFromFile'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    friendTreeInjector::addFromFile(TString const &,TString const &)\n"
-    "    friendTreeInjector::addFromFile(TString const &)\n");
   return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_friendTreeInjector_createChain(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  friendTreeInjector *arg1 = (friendTreeInjector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:friendTreeInjector_createChain",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_friendTreeInjector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "friendTreeInjector_createChain" "', argument " "1"" of type '" "friendTreeInjector *""'"); 
-  }
-  arg1 = reinterpret_cast< friendTreeInjector * >(argp1);
-  (arg1)->createChain();
-  resultobj = SWIG_Py_Void();
-  return resultobj;
 fail:
-  return NULL;
+  return 1;
 }
 
 
-SWIGINTERN PyObject *_wrap_friendTreeInjector_getChain(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  friendTreeInjector *arg1 = (friendTreeInjector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  TChain *result = 0 ;
+SWIGINTERN PyObject *Swig_var_rocCurveCollection_get(void) {
+  PyObject *pyobj = 0;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:friendTreeInjector_getChain",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_friendTreeInjector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "friendTreeInjector_getChain" "', argument " "1"" of type '" "friendTreeInjector *""'"); 
-  }
-  arg1 = reinterpret_cast< friendTreeInjector * >(argp1);
-  result = (TChain *)(arg1)->getChain();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TChain, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&rocCurveCollection), SWIGTYPE_p_class,  0 );
+  return pyobj;
 }
 
-
-SWIGINTERN PyObject *_wrap_friendTreeInjector_showList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  friendTreeInjector *arg1 = (friendTreeInjector *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:friendTreeInjector_showList",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_friendTreeInjector, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "friendTreeInjector_showList" "', argument " "1"" of type '" "friendTreeInjector const *""'"); 
-  }
-  arg1 = reinterpret_cast< friendTreeInjector * >(argp1);
-  ((friendTreeInjector const *)arg1)->showList();
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *friendTreeInjector_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *obj;
-  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_friendTreeInjector, SWIG_NewClientData(obj));
-  return SWIG_Py_Void();
-}
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"new_friendTreeInjector", _wrap_new_friendTreeInjector, METH_VARARGS, NULL},
-	 { (char *)"delete_friendTreeInjector", _wrap_delete_friendTreeInjector, METH_VARARGS, NULL},
-	 { (char *)"friendTreeInjector_addFromFile", _wrap_friendTreeInjector_addFromFile, METH_VARARGS, NULL},
-	 { (char *)"friendTreeInjector_createChain", _wrap_friendTreeInjector_createChain, METH_VARARGS, NULL},
-	 { (char *)"friendTreeInjector_getChain", _wrap_friendTreeInjector_getChain, METH_VARARGS, NULL},
-	 { (char *)"friendTreeInjector_showList", _wrap_friendTreeInjector_showList, METH_VARARGS, NULL},
-	 { (char *)"friendTreeInjector_swigregister", friendTreeInjector_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_TChain = {"_p_TChain", "TChain *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_TString = {"_p_TString", "TString *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_friendTreeInjector = {"_p_friendTreeInjector", "friendTreeInjector *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_class = {"_p_class", "class *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_TChain,
-  &_swigt__p_TString,
   &_swigt__p_char,
-  &_swigt__p_friendTreeInjector,
+  &_swigt__p_class,
 };
 
-static swig_cast_info _swigc__p_TChain[] = {  {&_swigt__p_TChain, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_TString[] = {  {&_swigt__p_TString, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_friendTreeInjector[] = {  {&_swigt__p_friendTreeInjector, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_class[] = {  {&_swigt__p_class, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_TChain,
-  _swigc__p_TString,
   _swigc__p_char,
-  _swigc__p_friendTreeInjector,
+  _swigc__p_class,
 };
 
 
@@ -4144,6 +3786,9 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
+  PyDict_SetItemString(md,(char *)"cvar", SWIG_globals());
+  SWIG_addvarlink(SWIG_globals(),(char *)"TLatex",Swig_var_TLatex_get, Swig_var_TLatex_set);
+  SWIG_addvarlink(SWIG_globals(),(char *)"rocCurveCollection",Swig_var_rocCurveCollection_get, Swig_var_rocCurveCollection_set);
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else

@@ -95,36 +95,7 @@ except __builtin__.Exception:
         pass
     _newclass = 0
 
-class friendTreeInjector(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, friendTreeInjector, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, friendTreeInjector, name)
-    __repr__ = _swig_repr
-
-    def __init__(self, *args):
-        this = _friendTreeInjector.new_friendTreeInjector(*args)
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-    __swig_destroy__ = _friendTreeInjector.delete_friendTreeInjector
-    __del__ = lambda self: None
-
-    def addFromFile(self, *args):
-        return _friendTreeInjector.friendTreeInjector_addFromFile(self, *args)
-
-    def createChain(self):
-        return _friendTreeInjector.friendTreeInjector_createChain(self)
-
-    def getChain(self):
-        return _friendTreeInjector.friendTreeInjector_getChain(self)
-
-    def showList(self):
-        return _friendTreeInjector.friendTreeInjector_showList(self)
-friendTreeInjector_swigregister = _friendTreeInjector.friendTreeInjector_swigregister
-friendTreeInjector_swigregister(friendTreeInjector)
-
 # This file is compatible with both classic and new-style classes.
 
+cvar = _friendTreeInjector.cvar
 

@@ -141,26 +141,37 @@ cpp_indata = Extension(
              os.path.join(INTERFACEPATH,
                           'indata_wrap.cxx')],
     include_dirs=cpp_lib_dirs,
-    libraries=['python2.7'])
+    libraries=['python3.6m'])
 
 cpp_helper = Extension(
-    'DeepJetCore.compiled.indata',
+    'DeepJetCore.compiled.helper',
     extra_compile_args=cpp_compiler_flags,
     sources=[os.path.join(COMPILEPATH, 'src', 'helper.cpp'),
              os.path.join(INTERFACEPATH,
                           'helper_wrap.cxx')],
     include_dirs=cpp_lib_dirs,
-    libraries=['python2.7'])
+    libraries=['python3.6m'])
 
 cpp_friendTreeInjector = Extension(
-    'DeepJetCore.compiled.indata',
+    'DeepJetCore.compiled.friendTreeInjector',
     extra_compile_args=cpp_compiler_flags,
     sources=[os.path.join(COMPILEPATH, 'src',
                           'friendTreeInjector.cpp'),
              os.path.join(INTERFACEPATH,
                           'friendTreeInjector_wrap.cxx')],
     include_dirs=cpp_lib_dirs,
-    libraries=['python2.7'])
+    libraries=['python3.6m'])
+
+
+cpp_friendTreeInjector = Extension(
+    'DeepJetCore.compiled.friendTreeInjector',
+    extra_compile_args=cpp_compiler_flags,
+    sources=[os.path.join(COMPILEPATH, 'src',
+                          'friendTreeInjector.cpp'),
+             os.path.join(INTERFACEPATH,
+                          'friendTreeInjector_wrap.cxx')],
+    include_dirs=cpp_lib_dirs,
+    libraries=['python3.6m'])
 
 boost_include_dirs = [os.path.join(CONDA_PREFIX, 'include')]
 module_lib_dirs = [
@@ -185,7 +196,7 @@ c_makePlots = Extension(
                           'c_makePlots.c')],
     include_dirs=module_lib_dirs,
     runtime_library_dirs=[],
-    libraries=['boost_python', 'python2.7'])
+    libraries=['boost_python', 'python3.6m'])
 
 c_makeROCs = Extension(
     'DeepJet.compiled.c_makeROCs',
@@ -194,7 +205,7 @@ c_makeROCs = Extension(
                           'c_makeROCs.c')],
     include_dirs=module_lib_dirs,
     runtime_library_dirs=[],
-    libraries=['boost_python', 'python2.7'])
+    libraries=['boost_python', 'python3.6m'])
 
 c_readArrThreaded = Extension(
     'DeepJet.compiled.c_readArrThreaded',
@@ -203,7 +214,7 @@ c_readArrThreaded = Extension(
                           'c_readArrThreaded.c')],
     include_dirs=module_lib_dirs,
     runtime_library_dirs=[],
-    libraries=['boost_python', 'python2.7'])
+    libraries=['boost_python', 'python3.6m'])
 
 c_randomSelect = Extension(
     'DeepJet.compiled.c_randomSelect',
@@ -212,7 +223,7 @@ c_randomSelect = Extension(
                           'c_randomSelect.c')],
     include_dirs=module_lib_dirs,
     runtime_library_dirs=[],
-    libraries=['boost_python', 'python2.7'])
+    libraries=['boost_python', 'python3.6m'])
 
 setup(name='DeepJetCore',
       version='0.0.5',
@@ -273,7 +284,7 @@ setup(name='DeepJetCore',
           'Intended Audience :: Developers',
           'Intended Audience :: Science/Research',
           'Operating System :: Unix',
-          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.6',
       ],
       keywords='deep-learning physics jets cern cms',
       project_urls={

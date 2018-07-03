@@ -96,15 +96,15 @@ except __builtin__.Exception:
     _newclass = 0
 
 
-def prependXRootD(path):
+def prependXRootD(path: 'TString const &') -> "TString":
     return _helper.prependXRootD(path)
 prependXRootD = _helper.prependXRootD
 
-def isApprox(a, b, eps=0.001):
+def isApprox(a: 'float const &', b: 'float const &', eps: 'float'=0.001) -> "bool":
     return _helper.isApprox(a, b, eps)
 isApprox = _helper.isApprox
 
-def deltaPhi(phi1, phi2):
+def deltaPhi(phi1: 'float const &', phi2: 'float const &') -> "float":
     return _helper.deltaPhi(phi1, phi2)
 deltaPhi = _helper.deltaPhi
 # This file is compatible with both classic and new-style classes.

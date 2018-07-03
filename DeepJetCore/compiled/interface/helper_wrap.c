@@ -15,30 +15,6 @@
 
 #define SWIG_PYTHON_DIRECTOR_NO_VTABLE
 
-
-#ifdef __cplusplus
-/* SwigValueWrapper is described in swig.swg */
-template<typename T> class SwigValueWrapper {
-  struct SwigMovePointer {
-    T *ptr;
-    SwigMovePointer(T *p) : ptr(p) { }
-    ~SwigMovePointer() { delete ptr; }
-    SwigMovePointer& operator=(SwigMovePointer& rhs) { T* oldptr = ptr; ptr = 0; delete oldptr; ptr = rhs.ptr; rhs.ptr = 0; return *this; }
-  } pointer;
-  SwigValueWrapper& operator=(const SwigValueWrapper<T>& rhs);
-  SwigValueWrapper(const SwigValueWrapper<T>& rhs);
-public:
-  SwigValueWrapper() : pointer(0) { }
-  SwigValueWrapper& operator=(const T& t) { SwigMovePointer tmp(new T(t)); pointer = tmp; return *this; }
-  operator T&() const { return *pointer.ptr; }
-  T *operator&() { return pointer.ptr; }
-};
-
-template <typename T> T SwigValueInit() {
-  return T();
-}
-#endif
-
 /* -----------------------------------------------------------------------------
  *  This section contains generic SWIG labels for method/variable
  *  declarations/attributes, and other compiler dependent labels.
@@ -3034,81 +3010,8 @@ static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_VERSION SWIGVERSION
 
 
-#define SWIG_as_voidptr(a) const_cast< void * >(static_cast< const void * >(a)) 
-#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),reinterpret_cast< void** >(a)) 
-
-
-#include <stdexcept>
-
-
-namespace swig {
-  class SwigPtr_PyObject {
-  protected:
-    PyObject *_obj;
-
-  public:
-    SwigPtr_PyObject() :_obj(0)
-    {
-    }
-
-    SwigPtr_PyObject(const SwigPtr_PyObject& item) : _obj(item._obj)
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      Py_XINCREF(_obj);      
-      SWIG_PYTHON_THREAD_END_BLOCK;
-    }
-    
-    SwigPtr_PyObject(PyObject *obj, bool initial_ref = true) :_obj(obj)
-    {
-      if (initial_ref) {
-        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-        Py_XINCREF(_obj);
-        SWIG_PYTHON_THREAD_END_BLOCK;
-      }
-    }
-    
-    SwigPtr_PyObject & operator=(const SwigPtr_PyObject& item) 
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      Py_XINCREF(item._obj);
-      Py_XDECREF(_obj);
-      _obj = item._obj;
-      SWIG_PYTHON_THREAD_END_BLOCK;
-      return *this;      
-    }
-    
-    ~SwigPtr_PyObject() 
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      Py_XDECREF(_obj);
-      SWIG_PYTHON_THREAD_END_BLOCK;
-    }
-    
-    operator PyObject *() const
-    {
-      return _obj;
-    }
-
-    PyObject *operator->() const
-    {
-      return _obj;
-    }
-  };
-}
-
-
-namespace swig {
-  struct SwigVar_PyObject : SwigPtr_PyObject {
-    SwigVar_PyObject(PyObject* obj = 0) : SwigPtr_PyObject(obj, false) { }
-    
-    SwigVar_PyObject & operator = (PyObject* obj)
-    {
-      Py_XDECREF(_obj);
-      _obj = obj;
-      return *this;      
-    }
-  };
-}
+#define SWIG_as_voidptr(a) (void *)((const void *)(a)) 
+#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
 extern TString prependXRootD(const TString& path);
@@ -3215,7 +3118,7 @@ SWIG_AsVal_float (PyObject * obj, float *val)
     if (SWIG_Float_Overflow_Check(v)) {
       return SWIG_OverflowError;
     } else {
-      if (val) *val = static_cast< float >(v);
+      if (val) *val = (float)(v);
     }
   }  
   return res;
@@ -3244,33 +3147,33 @@ extern "C" {
 SWIGINTERN PyObject *_wrap_prependXRootD(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   TString *arg1 = 0 ;
-  void *argp1 = 0 ;
+  void *argp1 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   TString result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:prependXRootD",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_TString,  0  | 0);
+  res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_TString,  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "prependXRootD" "', argument " "1"" of type '" "TString const &""'"); 
   }
   if (!argp1) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "prependXRootD" "', argument " "1"" of type '" "TString const &""'"); 
   }
-  arg1 = reinterpret_cast< TString * >(argp1);
+  arg1 = (TString *)(argp1);
   result = prependXRootD((TString const &)*arg1);
-  resultobj = SWIG_NewPointerObj((new TString(static_cast< const TString& >(result))), SWIGTYPE_p_TString, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((TString *)memcpy((TString *)calloc(1,sizeof(TString)),&result,sizeof(TString)), SWIGTYPE_p_TString, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_isApprox__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_isApprox(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   float *arg1 = 0 ;
   float *arg2 = 0 ;
-  float arg3 ;
+  float arg3 = (float) 0.001 ;
   float temp1 ;
   float val1 ;
   int ecode1 = 0 ;
@@ -3284,124 +3187,31 @@ SWIGINTERN PyObject *_wrap_isApprox__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj2 = 0 ;
   bool result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:isApprox",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|O:isApprox",&obj0,&obj1,&obj2)) SWIG_fail;
   ecode1 = SWIG_AsVal_float(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "isApprox" "', argument " "1"" of type '" "float""'");
   } 
-  temp1 = static_cast< float >(val1);
+  temp1 = (float)(val1);
   arg1 = &temp1;
   ecode2 = SWIG_AsVal_float(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "isApprox" "', argument " "2"" of type '" "float""'");
   } 
-  temp2 = static_cast< float >(val2);
+  temp2 = (float)(val2);
   arg2 = &temp2;
-  ecode3 = SWIG_AsVal_float(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "isApprox" "', argument " "3"" of type '" "float""'");
-  } 
-  arg3 = static_cast< float >(val3);
+  if (obj2) {
+    ecode3 = SWIG_AsVal_float(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "isApprox" "', argument " "3"" of type '" "float""'");
+    } 
+    arg3 = (float)(val3);
+  }
   result = (bool)isApprox((float const &)*arg1,(float const &)*arg2,arg3);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  resultobj = SWIG_From_bool((bool)(result));
   return resultobj;
 fail:
   return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_isApprox__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  float *arg1 = 0 ;
-  float *arg2 = 0 ;
-  float temp1 ;
-  float val1 ;
-  int ecode1 = 0 ;
-  float temp2 ;
-  float val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  bool result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:isApprox",&obj0,&obj1)) SWIG_fail;
-  ecode1 = SWIG_AsVal_float(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "isApprox" "', argument " "1"" of type '" "float""'");
-  } 
-  temp1 = static_cast< float >(val1);
-  arg1 = &temp1;
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "isApprox" "', argument " "2"" of type '" "float""'");
-  } 
-  temp2 = static_cast< float >(val2);
-  arg2 = &temp2;
-  result = (bool)isApprox((float const &)*arg1,(float const &)*arg2);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_isApprox(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[4] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if (argc == 2) {
-    int _v;
-    {
-      int res = SWIG_AsVal_float(argv[0], NULL);
-      _v = SWIG_CheckState(res);
-    }
-    if (_v) {
-      {
-        int res = SWIG_AsVal_float(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        return _wrap_isApprox__SWIG_1(self, args);
-      }
-    }
-  }
-  if (argc == 3) {
-    int _v;
-    {
-      int res = SWIG_AsVal_float(argv[0], NULL);
-      _v = SWIG_CheckState(res);
-    }
-    if (_v) {
-      {
-        int res = SWIG_AsVal_float(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        {
-          int res = SWIG_AsVal_float(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
-        if (_v) {
-          return _wrap_isApprox__SWIG_0(self, args);
-        }
-      }
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'isApprox'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    isApprox(float const &,float const &,float)\n"
-    "    isApprox(float const &,float const &)\n");
-  return 0;
 }
 
 
@@ -3424,16 +3234,16 @@ SWIGINTERN PyObject *_wrap_deltaPhi(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "deltaPhi" "', argument " "1"" of type '" "float""'");
   } 
-  temp1 = static_cast< float >(val1);
+  temp1 = (float)(val1);
   arg1 = &temp1;
   ecode2 = SWIG_AsVal_float(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "deltaPhi" "', argument " "2"" of type '" "float""'");
   } 
-  temp2 = static_cast< float >(val2);
+  temp2 = (float)(val2);
   arg2 = &temp2;
   result = (float)deltaPhi((float const &)*arg1,(float const &)*arg2);
-  resultobj = SWIG_From_float(static_cast< float >(result));
+  resultobj = SWIG_From_float((float)(result));
   return resultobj;
 fail:
   return NULL;
