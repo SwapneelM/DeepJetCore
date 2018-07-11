@@ -21,24 +21,26 @@ def checkTokens(cutofftime_hours=48):
     if not renewtokens:
         return True
     import subprocess
+    import re
     
     klist=""
     try:
-        klist=str(subprocess.check_output(['klist'],stderr=subprocess.STDOUT))
+        klist=(subprocess.check_output(['klist'],stderr=subprocess.STDOUT))
+        klist = re.sub(r"\s+", " ", klist.decode('utf-8')).split()
     except subprocess.CalledProcessError as inst:
         print('klist failed - no token?')#just ignore
         klist=""
         del inst
         
-    
-    if not 'renew' in klist:
+    print(klist)    
+    if 'renew' not in klist:
         print('did not find renew option in kerberos token. Starting kinit')
         subprocess.check_call(['kinit','-l 96h'])
         subprocess.check_call(['aklog'])
         return True
         
-    klist=str(klist).split()
-    
+    # klist=str(klist).split()
+    print(klist)
     firstrenewapp=klist.index('renew')
     
     

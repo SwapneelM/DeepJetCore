@@ -8,10 +8,10 @@ except ImportError:
     found = False
     
 from keras.models import load_model
-from DeepJetCore.evaluation import testDescriptor
+from DeepJetCore.evaluation import evaluation
 from argparse import ArgumentParser
 from keras import backend as K
-import imp
+
 try:
     imp.find_module('Losses')
     from Losses import *
@@ -55,16 +55,16 @@ custom_objs = {}
 custom_objs.update(global_loss_list)
 custom_objs.update(global_layers_list)
 custom_objs.update(global_metrics_list)
-model=load_model(args.inputModel, custom_objects=custom_objs)
+model = load_model(args.inputModel, custom_objects=custom_objs)
 
 
-td=testDescriptor(addnumpyoutput = args.numpy)
+td = evaluation.testDescriptor(addnumpyoutput = args.numpy)
 if args.use:
 	td.use_only = [int(i) for i in args.use.split(',')]
 
 from DeepJetCore.DataCollection import DataCollection
 
-testd=DataCollection()
+testd = DataCollection()
 testd.readFromFile(args.inputDataCollection)
 
 

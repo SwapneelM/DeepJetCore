@@ -36,11 +36,7 @@ for name, obj in inspect.getmembers(sys.modules['datastructures']):
         class_options.append(obj)
     elif inspect.ismodule(obj) and 'TrainData' in name and obj not in class_options:
         class_options.append(obj)
-
-print("\nClass Options: ", class_options)      
 class_options = dict((str(i).split("'")[1].split('.')[-1], i) for i in class_options)
-print("\nClass Options: ", class_options)      
-
 
 parser = ArgumentParser('program to convert root tuples to traindata format')
 parser.add_argument("-i", help="set input sample description (output from the check.py script)", metavar="FILE")
@@ -95,8 +91,8 @@ if class_name in class_options:
     traind = class_options[class_name]
 elif not recover and not testdatafor:
     print('\nAvailable classes: ')
-    for key, val in class_options.iteritems():
-        print(key)
+    # for key, val in iter(class_options.items()):
+    #    print(key)
     raise Exception('Incorrect class selection')        
 if testdatafor:
     logging.info('Converting test data, no weights applied')

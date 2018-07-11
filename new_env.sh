@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source activate deepjetLinux_py36
+conda activate deepjetLinux_py36
 # source activate deepjetLinux3
 
 export DEEPJETCORE=`pwd`
