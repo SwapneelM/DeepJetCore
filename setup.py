@@ -277,16 +277,25 @@ setup(name='DeepJetCore',
       ],
       keywords='deep-learning physics jets cern cms',
       project_urls={
-          'Documentation': 'https://github.com/SwapneelM/DeepJetCore/wiki',
-          'Source': 'https://github.com/SwapneelM/DeepJetCore',
+            'Documentation': 'https://github.com/SwapneelM/DeepJetCore/wiki',
+            'Source': 'https://github.com/SwapneelM/DeepJetCore',
       },
       cmdclass={
-          'build_ext': DeepJetCoreBuildExt,
+            'build_ext': DeepJetCoreBuildExt,
       },
       ext_modules=[
-          quicklz,
+            quicklz,
+            cpp_helper,
+            cpp_indata,
+            cpp_friendTreeInjector,
+            cpp_rocCurve,
+            cpp_rocCurveCollection,
+            c_randomSelect,
+            c_makeROCs,
+            c_meanNormZeroPad,
+            c_makePlots,
+            c_readArrThreaded,
       ])
-
 '''
 cpp_helper,
 cpp_indata,
