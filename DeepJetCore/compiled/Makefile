@@ -48,6 +48,7 @@ all: $(MODULES_SHARED_LIBS)
 %.o: ./src/%.C 
 	g++   $(ROOTSTUFF) -O2 -I./interface -I$(PYTHON_INCLUDE) -I$(BOOST_INC) -fPIC -c -o $(@) $<
 
+.PHONY: clean
 
 clean:
 	rm -f $(OBJ_FILES) $(SHARED_LIBS) $(MODULES_SHARED_LIBS) $(MODULES_OBJ_FILES) *.so
