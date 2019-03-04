@@ -1,5 +1,5 @@
 import os
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 from setuptools.command.install import install
 # from distutils.command.build_py import build_py
 from setuptools.command.build_py import build_py
@@ -65,12 +65,13 @@ class DeepJetCoreBuild(build_py):
     '''
     def run(self):
         # run original build_py code
+        # os.environ["CC"] = "gcc"
         # call(quicklzcompile, cwd=COMPILEPATH)
-        # os.environ["CC"] = "g++"
-	call(['ln', '-sf', 'libstdc++.so.6.0.24', 'libstdc++.so.6'], cwd=os.path.join(CONDA_PREFIX, 'lib'))
-        call(cmd)
+        os.environ["CC"] = "g++"
+        call(['ln', '-sf', 'libstdc++.so.6.0.24', 'libstdc++.so.6'], cwd=os.path.join(CONDA_PREFIX, 'lib'))
+        # call(cmd)
         print "\n\tFixing broken ROOT script activateROOT in conda\n"
-	call(['cp', 'DeepJetCore/environment/activateROOT.sh', '$CONDA_PREFIX/etc/conda/activate.d/activateROOT.sh'])
+        call(['/bin/cp', '-rf', './DeepJetCore/environment/activateROOT.sh', '$CONDA_PREFIX/etc/conda/activate.d/activateROOT.sh'])
         build_py.run(self)
         # print "\n\n*********running custom build_py***********\n\n"
 
@@ -124,13 +125,15 @@ root_flags = [
 ]
 '''
 
+swig_build_opts = ['-c++']
+
 root_flags = check_output(['root-config', '--cflags',
                            '--libs', '--glibs']).replace('\n', '').split(' ')
 cpp_compiler_flags = root_flags + ['-g', '-O2', '-fPIC', '-c']
 
 cpp_lib_dirs = [
-    os.path.join(CONDA_PREFIX, 'lib'),
     os.path.join(COMPILEPATH, 'interface'),
+    os.path.join(CONDA_PREFIX, 'lib'),
 ]
 cpp_include_dirs = [
     os.path.join(CONDA_PREFIX, 'include'),
@@ -144,116 +147,132 @@ boost_include_dirs = [
     os.path.join(CONDA_PREFIX, 'include'),
 ]
 module_compiler_flags = root_flags + ['-g', '-fPIC', '-Wl,--export-dynamic']
-
+os.environ["CC"] = "gcc"
 quicklz = Extension(
-    'libquicklz',
+    'quicklz',
+    sources=[os.path.join(COMPILEPATH, 'interface', 'quicklz.i')],
+    swig_opts=swig_build_opts,
+    extra_compile_args=[
+        "-O2",
+        "-std=c99",
+        "-Wall",
+        "-W",
+        "-Wundef"],
     include_dirs=[os.path.join(COMPILEPATH, 'interface')],
-    sources=[os.path.join(COMPILEPATH, 'src', 'quicklzpy.c')],
-    language='c')
+    language='c',
+    py_modules=['quicklz'])
 
 cpp_indata = Extension(
-    'DeepJetCore.compiled.indata',
+    'indata',
+    sources=[os.path.join(COMPILEPATH, 'interface', 'indata.i')],
+    swig_opts=swig_build_opts,
     extra_compile_args=cpp_compiler_flags,
-    sources=[os.path.join(COMPILEPATH, 'src',
-                          'indata_wrap.cxx')],
+    include_dirs=cpp_lib_dirs,
+    libraries=['python2.7'],
+    language='c++',
+    py_modules=['indata'])
+
+'''cpp_colorToTColor = Extension(
+    'colorToTColor',
+    sources=[os.path.join(COMPILEPATH, 'src','colorToTColor_wrap.cxx')],
+    extra_compile_args=cpp_compiler_flags,
     include_dirs=cpp_lib_dirs,
     libraries=['python2.7'],
     language='c++')
-
-cpp_colorToTColor = Extension(
-    'DeepJetCore.compiled.colorToTColor',
-    extra_compile_args=cpp_compiler_flags,
-    sources=[os.path.join(COMPILEPATH, 'src',
-                          'colorToTColor_wrap.cxx')],
-    include_dirs=cpp_lib_dirs,
-    libraries=['python2.7'],
-    language='c++')
-
+'''
 cpp_rocCurve = Extension(
-    'DeepJetCore.compiled.rocCurve',
+    'rocCurve',
+    sources=[os.path.join(COMPILEPATH, 'interface', 'rocCurve.i')],
+    swig_opts=swig_build_opts,
     extra_compile_args=cpp_compiler_flags,
-    sources=[os.path.join(COMPILEPATH, 'src',
-                          'rocCurve_wrap.cxx')],
     include_dirs=cpp_lib_dirs,
     libraries=['python2.7'],
-    language='c++')
+    language='c++',
+    py_modules=['rocCurve'])
 
 cpp_rocCurveCollection = Extension(
-    'DeepJetCore.compiled.rocCurveCollection',
+    'rocCurveCollection',
+    sources=[os.path.join(COMPILEPATH, 'interface',
+                          'rocCurveCollection.i')],
+    swig_opts=swig_build_opts,
     extra_compile_args=cpp_compiler_flags,
-    sources=[os.path.join(COMPILEPATH, 'src',
-                          'rocCurveCollection_wrap.cxx')],
     include_dirs=cpp_lib_dirs,
     libraries=['python2.7'],
-    language='c++')
+    language='c++',
+    py_modules=['rocCurveCollection'])
 
 cpp_friendTreeInjector = Extension(
-    'DeepJetCore.compiled.friendTreeInjector',
+    'friendTreeInjector',
+    sources=[os.path.join(COMPILEPATH, 'interface',
+                          'friendTreeInjector.i'),
+             os.path.join(COMPILEPATH, 'interface',
+                          'friendTreeInjector.cpp')],
+    swig_opts=swig_build_opts,
     extra_compile_args=cpp_compiler_flags,
-    sources=[os.path.join(COMPILEPATH, 'src',
-                          'friendTreeInjector_wrap.cxx')],
     include_dirs=cpp_lib_dirs,
     libraries=['python2.7'],
-    language='c++')
+    language='c++',
+    py_modules=['friendTreeInjector'])
 
 cpp_helper = Extension(
-    'DeepJetCore.compiled.helper',
+    'helper',
+    sources=[os.path.join(COMPILEPATH, 'interface', 'helper.i')],
+    swig_opts=swig_build_opts,
     extra_compile_args=cpp_compiler_flags,
-    sources=[os.path.join(COMPILEPATH, 'src',
-                          'helper_wrap.cxx')],
     include_dirs=cpp_lib_dirs,
     libraries=['python2.7'],
-    language='c++')
+    language='c++',
+    py_modules=['helper'])
 
 c_meanNormZeroPad = Extension(
-    'DeepJet.compiled.c_meanNormZeroPad',
+    'c_meanNormZeroPad',
     extra_compile_args=module_compiler_flags,
     sources=[os.path.join(COMPILEPATH, 'src',
                           'c_meanNormZeroPad.C')],
     include_dirs=module_lib_dirs,
-    runtime_library_dirs=[boost_include_dirs],
+    runtime_library_dirs=boost_include_dirs,
     libraries=['boost_python', 'python2.7'],
     language='c++')
 
 c_makePlots = Extension(
-    'DeepJet.compiled.c_makePlots',
+    'c_makePlots',
     extra_compile_args=module_compiler_flags,
     sources=[os.path.join(COMPILEPATH, 'src',
                           'c_makePlots.C')],
     include_dirs=module_lib_dirs,
-    runtime_library_dirs=[boost_include_dirs],
+    runtime_library_dirs=boost_include_dirs,
     libraries=['boost_python', 'python2.7'],
     language='c++')
 
 c_makeROCs = Extension(
-    'DeepJet.compiled.c_makeROCs',
+    'c_makeROCs',
     extra_compile_args=module_compiler_flags,
     sources=[os.path.join(COMPILEPATH, 'src',
                           'c_makeROCs.C')],
     include_dirs=module_lib_dirs,
-    runtime_library_dirs=[boost_include_dirs],
+    runtime_library_dirs=boost_include_dirs,
     libraries=['boost_python', 'python2.7'],
     language='c++')
 
 c_readArrThreaded = Extension(
-    'DeepJet.compiled.c_readArrThreaded',
+    'c_readArrThreaded',
     extra_compile_args=module_compiler_flags,
     sources=[os.path.join(COMPILEPATH, 'src',
                           'c_readArrThreaded.C')],
     include_dirs=module_lib_dirs,
-    runtime_library_dirs=[boost_include_dirs],
+    runtime_library_dirs=boost_include_dirs,
     libraries=['boost_python', 'python2.7'],
-    language='c++')
+    language='c')
 
 c_randomSelect = Extension(
-    'DeepJet.compiled.c_randomSelect',
+    'c_randomSelect',
     extra_compile_args=module_compiler_flags,
     sources=[os.path.join(COMPILEPATH, 'src',
                           'c_randomSelect.C')],
     include_dirs=module_lib_dirs,
-    runtime_library_dirs=[boost_include_dirs],
+    runtime_library_dirs=boost_include_dirs,
     libraries=['boost_python', 'python2.7'],
-    language='c++')
+    language='c')
 
 # To Do: modify package DeepJetCore to allow find_packages()
 # to find all the subpackages recursively by adding this to __init__.py
@@ -267,10 +286,7 @@ setup(name='DeepJetCore',
       author_email='swapneel.mehta@cern.ch',
       license='Apache',
       long_description=retrieveReadmeContent(),
-      packages=['DeepJetCore',
-                'DeepJetCore.preprocessing',
-                'DeepJetCore.evaluation',
-                'DeepJetCore.training'],
+      packages=find_packages(),
       scripts=['./DeepJetCore/bin/plotLoss.py',
                './DeepJetCore/bin/plotLoss.py',
                './DeepJetCore/bin/batch_conversion.py',
@@ -308,15 +324,26 @@ setup(name='DeepJetCore',
           'Operating System :: Unix',
           'Programming Language :: Python :: 2.7',
       ],
-      keywords='deep-learning physics jets cern cms',
+      keywords='machine-learning deep-neural-networks physics cern cms',
       project_urls={
-          'Documentation': 'https://github.com/SwapneelM/DeepJetCore/wiki',
+          'Documentation': 'http://swapneelm.github.io/DeepJetCore',
           'Source': 'https://github.com/SwapneelM/DeepJetCore',
       },
       cmdclass={
           'build_py': DeepJetCoreBuild,
       },
       ext_modules=[
+          quicklz,
+          cpp_indata,
+          cpp_helper,
+          cpp_friendTreeInjector,
+          cpp_rocCurve,
+          cpp_rocCurveCollection,
+          c_makePlots,
+          c_makeROCs,
+          c_meanNormZeroPad,
+          c_randomSelect,
+          c_readArrThreaded,
       ])
 
 '''

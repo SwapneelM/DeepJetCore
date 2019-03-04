@@ -3004,8 +3004,16 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-static swig_type_info *swig_types[2];
-static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
+#define SWIGTYPE_p_p_unsigned_char swig_types[1]
+#define SWIGTYPE_p_qlz_hash_compress swig_types[2]
+#define SWIGTYPE_p_qlz_hash_decompress swig_types[3]
+#define SWIGTYPE_p_qlz_state_compress swig_types[4]
+#define SWIGTYPE_p_qlz_state_decompress swig_types[5]
+#define SWIGTYPE_p_unsigned_char swig_types[6]
+#define SWIGTYPE_p_unsigned_int swig_types[7]
+#define SWIGTYPE_p_unsigned_short swig_types[8]
+static swig_type_info *swig_types[10];
+static swig_module_info swig_module = {swig_types, 9, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3018,16 +3026,16 @@ static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
 #endif
 
 /*-----------------------------------------------
-              @(target):= _helper.so
+              @(target):= _quicklz.so
   ------------------------------------------------*/
 #if PY_VERSION_HEX >= 0x03000000
-#  define SWIG_init    PyInit__helper
+#  define SWIG_init    PyInit__quicklz
 
 #else
-#  define SWIG_init    init_helper
+#  define SWIG_init    init_quicklz
 
 #endif
-#define SWIG_name    "_helper"
+#define SWIG_name    "_quicklz"
 
 #define SWIGVERSION 0x030012 
 #define SWIG_VERSION SWIGVERSION
@@ -3109,53 +3117,16 @@ namespace swig {
   };
 }
 
-
-extern bool isApprox(const float& a , const float& b, float eps=0.001);
-extern float deltaPhi(const float& phi1, const float& phi2);
-
-
-#include <float.h>
+ 
+    #define SWIG_FILE_WITH_INIT
+    #include "quicklz.h"
 
 
-#include <math.h>
-
-
-/* Getting isfinite working pre C99 across multiple platforms is non-trivial. Users can provide SWIG_isfinite on older platforms. */
-#ifndef SWIG_isfinite
-/* isfinite() is a macro for C99 */
-# if defined(isfinite)
-#  define SWIG_isfinite(X) (isfinite(X))
-# elif defined __cplusplus && __cplusplus >= 201103L
-/* Use a template so that this works whether isfinite() is std::isfinite() or
- * in the global namespace.  The reality seems to vary between compiler
- * versions.
- *
- * Make sure namespace std exists to avoid compiler warnings.
- *
- * extern "C++" is required as this fragment can end up inside an extern "C" { } block
- */
-namespace std { }
-extern "C++" template<typename T>
-inline int SWIG_isfinite_func(T x) {
-  using namespace std;
-  return isfinite(x);
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
 }
-#  define SWIG_isfinite(X) (SWIG_isfinite_func(X))
-# elif defined(_MSC_VER)
-#  define SWIG_isfinite(X) (_finite(X))
-# elif defined(__sun) && defined(__SVR4)
-#  include <ieeefp.h>
-#  define SWIG_isfinite(X) (finite(X))
-# endif
-#endif
-
-
-/* Accept infinite as a valid float value unless we are unable to check if a value is finite */
-#ifdef SWIG_isfinite
-# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX) && SWIG_isfinite(X))
-#else
-# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX))
-#endif
 
 
 SWIGINTERN int
@@ -3204,209 +3175,1173 @@ SWIG_AsVal_double (PyObject *obj, double *val)
 }
 
 
+#include <float.h>
+
+
+#include <math.h>
+
+
+SWIGINTERNINLINE int
+SWIG_CanCastAsInteger(double *d, double min, double max) {
+  double x = *d;
+  if ((min <= x && x <= max)) {
+   double fx = floor(x);
+   double cx = ceil(x);
+   double rd =  ((x - fx) < 0.5) ? fx : cx; /* simple rint */
+   if ((errno == EDOM) || (errno == ERANGE)) {
+     errno = 0;
+   } else {
+     double summ, reps, diff;
+     if (rd < x) {
+       diff = x - rd;
+     } else if (rd > x) {
+       diff = rd - x;
+     } else {
+       return 1;
+     }
+     summ = rd + x;
+     reps = diff/summ;
+     if (reps < 8*DBL_EPSILON) {
+       *d = rd;
+       return 1;
+     }
+   }
+  }
+  return 0;
+}
+
+
 SWIGINTERN int
-SWIG_AsVal_float (PyObject * obj, float *val)
+SWIG_AsVal_unsigned_SS_long (PyObject *obj, unsigned long *val) 
 {
-  double v;
-  int res = SWIG_AsVal_double (obj, &v);
+#if PY_VERSION_HEX < 0x03000000
+  if (PyInt_Check(obj)) {
+    long v = PyInt_AsLong(obj);
+    if (v >= 0) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      return SWIG_OverflowError;
+    }
+  } else
+#endif
+  if (PyLong_Check(obj)) {
+    unsigned long v = PyLong_AsUnsignedLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+      return SWIG_OverflowError;
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    int dispatch = 0;
+    unsigned long v = PyLong_AsUnsignedLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_AddCast(SWIG_OK);
+    } else {
+      PyErr_Clear();
+    }
+    if (!dispatch) {
+      double d;
+      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
+      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, 0, ULONG_MAX)) {
+	if (val) *val = (unsigned long)(d);
+	return res;
+      }
+    }
+  }
+#endif
+  return SWIG_TypeError;
+}
+
+
+#include <limits.h>
+#if !defined(SWIG_NO_LLONG_MAX)
+# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
+#   define LLONG_MAX __LONG_LONG_MAX__
+#   define LLONG_MIN (-LLONG_MAX - 1LL)
+#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
+# endif
+#endif
+
+
+#if defined(LLONG_MAX) && !defined(SWIG_LONG_LONG_AVAILABLE)
+#  define SWIG_LONG_LONG_AVAILABLE
+#endif
+
+
+#ifdef SWIG_LONG_LONG_AVAILABLE
+SWIGINTERN int
+SWIG_AsVal_unsigned_SS_long_SS_long (PyObject *obj, unsigned long long *val)
+{
+  int res = SWIG_TypeError;
+  if (PyLong_Check(obj)) {
+    unsigned long long v = PyLong_AsUnsignedLongLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+      res = SWIG_OverflowError;
+    }
+  } else {
+    unsigned long v;
+    res = SWIG_AsVal_unsigned_SS_long (obj,&v);
+    if (SWIG_IsOK(res)) {
+      if (val) *val = v;
+      return res;
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    const double mant_max = 1LL << DBL_MANT_DIG;
+    double d;
+    res = SWIG_AsVal_double (obj,&d);
+    if (SWIG_IsOK(res) && !SWIG_CanCastAsInteger(&d, 0, mant_max))
+      return SWIG_OverflowError;
+    if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, 0, mant_max)) {
+      if (val) *val = (unsigned long long)(d);
+      return SWIG_AddCast(res);
+    }
+    res = SWIG_TypeError;
+  }
+#endif
+  return res;
+}
+#endif
+
+
+SWIGINTERNINLINE int
+SWIG_AsVal_size_t (PyObject * obj, size_t *val)
+{
+  int res = SWIG_TypeError;
+#ifdef SWIG_LONG_LONG_AVAILABLE
+  if (sizeof(size_t) <= sizeof(unsigned long)) {
+#endif
+    unsigned long v;
+    res = SWIG_AsVal_unsigned_SS_long (obj, val ? &v : 0);
+    if (SWIG_IsOK(res) && val) *val = static_cast< size_t >(v);
+#ifdef SWIG_LONG_LONG_AVAILABLE
+  } else if (sizeof(size_t) <= sizeof(unsigned long long)) {
+    unsigned long long v;
+    res = SWIG_AsVal_unsigned_SS_long_SS_long (obj, val ? &v : 0);
+    if (SWIG_IsOK(res) && val) *val = static_cast< size_t >(v);
+  }
+#endif
+  return res;
+}
+
+
+  #define SWIG_From_long   PyInt_FromLong 
+
+
+SWIGINTERNINLINE PyObject* 
+SWIG_From_unsigned_SS_long  (unsigned long value)
+{
+  return (value > LONG_MAX) ?
+    PyLong_FromUnsignedLong(value) : PyInt_FromLong(static_cast< long >(value));
+}
+
+
+#ifdef SWIG_LONG_LONG_AVAILABLE
+SWIGINTERNINLINE PyObject* 
+SWIG_From_unsigned_SS_long_SS_long  (unsigned long long value)
+{
+  return (value > LONG_MAX) ?
+    PyLong_FromUnsignedLongLong(value) : PyInt_FromLong(static_cast< long >(value));
+}
+#endif
+
+
+SWIGINTERNINLINE PyObject *
+SWIG_From_size_t  (size_t value)
+{    
+#ifdef SWIG_LONG_LONG_AVAILABLE
+  if (sizeof(size_t) <= sizeof(unsigned long)) {
+#endif
+    return SWIG_From_unsigned_SS_long  (static_cast< unsigned long >(value));
+#ifdef SWIG_LONG_LONG_AVAILABLE
+  } else {
+    /* assume sizeof(size_t) <= sizeof(unsigned long long) */
+    return SWIG_From_unsigned_SS_long_SS_long  (static_cast< unsigned long long >(value));
+  }
+#endif
+}
+
+
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
+{
+#if PY_VERSION_HEX>=0x03000000
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+  if (PyBytes_Check(obj))
+#else
+  if (PyUnicode_Check(obj))
+#endif
+#else  
+  if (PyString_Check(obj))
+#endif
+  {
+    char *cstr; Py_ssize_t len;
+#if PY_VERSION_HEX>=0x03000000
+#if !defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+    if (!alloc && cptr) {
+        /* We can't allow converting without allocation, since the internal
+           representation of string in Python 3 is UCS-2/UCS-4 but we require
+           a UTF-8 representation.
+           TODO(bhy) More detailed explanation */
+        return SWIG_RuntimeError;
+    }
+    obj = PyUnicode_AsUTF8String(obj);
+    if(alloc) *alloc = SWIG_NEWOBJ;
+#endif
+    PyBytes_AsStringAndSize(obj, &cstr, &len);
+#else
+    PyString_AsStringAndSize(obj, &cstr, &len);
+#endif
+    if (cptr) {
+      if (alloc) {
+	/* 
+	   In python the user should not be able to modify the inner
+	   string representation. To warranty that, if you define
+	   SWIG_PYTHON_SAFE_CSTRINGS, a new/copy of the python string
+	   buffer is always returned.
+
+	   The default behavior is just to return the pointer value,
+	   so, be careful.
+	*/ 
+#if defined(SWIG_PYTHON_SAFE_CSTRINGS)
+	if (*alloc != SWIG_OLDOBJ) 
+#else
+	if (*alloc == SWIG_NEWOBJ) 
+#endif
+	{
+	  *cptr = reinterpret_cast< char* >(memcpy(new char[len + 1], cstr, sizeof(char)*(len + 1)));
+	  *alloc = SWIG_NEWOBJ;
+	} else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      } else {
+#if PY_VERSION_HEX>=0x03000000
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+	*cptr = PyBytes_AsString(obj);
+#else
+	assert(0); /* Should never reach here with Unicode strings in Python 3 */
+#endif
+#else
+	*cptr = SWIG_Python_str_AsChar(obj);
+#endif
+      }
+    }
+    if (psize) *psize = len + 1;
+#if PY_VERSION_HEX>=0x03000000 && !defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+    Py_XDECREF(obj);
+#endif
+    return SWIG_OK;
+  } else {
+#if defined(SWIG_PYTHON_2_UNICODE)
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+#error "Cannot use both SWIG_PYTHON_2_UNICODE and SWIG_PYTHON_STRICT_BYTE_CHAR at once"
+#endif
+#if PY_VERSION_HEX<0x03000000
+    if (PyUnicode_Check(obj)) {
+      char *cstr; Py_ssize_t len;
+      if (!alloc && cptr) {
+        return SWIG_RuntimeError;
+      }
+      obj = PyUnicode_AsUTF8String(obj);
+      if (PyString_AsStringAndSize(obj, &cstr, &len) != -1) {
+        if (cptr) {
+          if (alloc) *alloc = SWIG_NEWOBJ;
+          *cptr = reinterpret_cast< char* >(memcpy(new char[len + 1], cstr, sizeof(char)*(len + 1)));
+        }
+        if (psize) *psize = len + 1;
+
+        Py_XDECREF(obj);
+        return SWIG_OK;
+      } else {
+        Py_XDECREF(obj);
+      }
+    }
+#endif
+#endif
+
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *) vptr;
+	if (psize) *psize = vptr ? (strlen((char *)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+
+
+
+SWIGINTERN int
+SWIG_AsVal_long (PyObject *obj, long* val)
+{
+#if PY_VERSION_HEX < 0x03000000
+  if (PyInt_Check(obj)) {
+    if (val) *val = PyInt_AsLong(obj);
+    return SWIG_OK;
+  } else
+#endif
+  if (PyLong_Check(obj)) {
+    long v = PyLong_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+      return SWIG_OverflowError;
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    int dispatch = 0;
+    long v = PyInt_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_AddCast(SWIG_OK);
+    } else {
+      PyErr_Clear();
+    }
+    if (!dispatch) {
+      double d;
+      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
+      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
+	if (val) *val = (long)(d);
+	return res;
+      }
+    }
+  }
+#endif
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (PyObject * obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
   if (SWIG_IsOK(res)) {
-    if (SWIG_Float_Overflow_Check(v)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
       return SWIG_OverflowError;
     } else {
-      if (val) *val = static_cast< float >(v);
+      if (val) *val = static_cast< int >(v);
     }
   }  
   return res;
 }
 
-
-SWIGINTERNINLINE PyObject*
-  SWIG_From_bool  (bool value)
-{
-  return PyBool_FromLong(value ? 1 : 0);
-}
-
-
-  #define SWIG_From_double   PyFloat_FromDouble 
-
-
-SWIGINTERNINLINE PyObject *
-SWIG_From_float  (float value)
-{    
-  return SWIG_From_double  (value);
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_isApprox__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_qlz_hash_compress_offset_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  float *arg1 = 0 ;
-  float *arg2 = 0 ;
-  float arg3 ;
-  float temp1 ;
-  float val1 ;
-  int ecode1 = 0 ;
-  float temp2 ;
-  float val2 ;
+  qlz_hash_compress *arg1 = (qlz_hash_compress *) 0 ;
+  unsigned char **arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qlz_hash_compress_offset_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_hash_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_hash_compress_offset_set" "', argument " "1"" of type '" "qlz_hash_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_hash_compress * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qlz_hash_compress_offset_set" "', argument " "2"" of type '" "unsigned char const *[16]""'"); 
+  } 
+  arg2 = reinterpret_cast< unsigned char ** >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)16; ++ii) *(unsigned char const * *)&arg1->offset[ii] = *((unsigned char const * *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""offset""' of type '""unsigned char const *[16]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_hash_compress_offset_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_hash_compress *arg1 = (qlz_hash_compress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  unsigned char **result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_hash_compress_offset_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_hash_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_hash_compress_offset_get" "', argument " "1"" of type '" "qlz_hash_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_hash_compress * >(argp1);
+  result = (unsigned char **)(unsigned char **) ((arg1)->offset);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_p_unsigned_char, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_qlz_hash_compress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_hash_compress *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_qlz_hash_compress")) SWIG_fail;
+  result = (qlz_hash_compress *)new qlz_hash_compress();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_qlz_hash_compress, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_qlz_hash_compress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_hash_compress *arg1 = (qlz_hash_compress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_qlz_hash_compress",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_hash_compress, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_qlz_hash_compress" "', argument " "1"" of type '" "qlz_hash_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_hash_compress * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *qlz_hash_compress_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_qlz_hash_compress, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_qlz_hash_decompress_offset_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_hash_decompress *arg1 = (qlz_hash_decompress *) 0 ;
+  unsigned char **arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qlz_hash_decompress_offset_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_hash_decompress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_hash_decompress_offset_set" "', argument " "1"" of type '" "qlz_hash_decompress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_hash_decompress * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qlz_hash_decompress_offset_set" "', argument " "2"" of type '" "unsigned char const *[16]""'"); 
+  } 
+  arg2 = reinterpret_cast< unsigned char ** >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)16; ++ii) *(unsigned char const * *)&arg1->offset[ii] = *((unsigned char const * *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""offset""' of type '""unsigned char const *[16]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_hash_decompress_offset_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_hash_decompress *arg1 = (qlz_hash_decompress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  unsigned char **result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_hash_decompress_offset_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_hash_decompress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_hash_decompress_offset_get" "', argument " "1"" of type '" "qlz_hash_decompress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_hash_decompress * >(argp1);
+  result = (unsigned char **)(unsigned char **) ((arg1)->offset);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_p_unsigned_char, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_qlz_hash_decompress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_hash_decompress *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_qlz_hash_decompress")) SWIG_fail;
+  result = (qlz_hash_decompress *)new qlz_hash_decompress();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_qlz_hash_decompress, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_qlz_hash_decompress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_hash_decompress *arg1 = (qlz_hash_decompress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_qlz_hash_decompress",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_hash_decompress, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_qlz_hash_decompress" "', argument " "1"" of type '" "qlz_hash_decompress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_hash_decompress * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *qlz_hash_decompress_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_qlz_hash_decompress, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_qlz_state_compress_stream_buffer_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  unsigned char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qlz_state_compress_stream_buffer_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_compress_stream_buffer_set" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qlz_state_compress_stream_buffer_set" "', argument " "2"" of type '" "unsigned char [1000000]""'"); 
+  } 
+  arg2 = reinterpret_cast< unsigned char * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)1000000; ++ii) *(unsigned char *)&arg1->stream_buffer[ii] = *((unsigned char *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""stream_buffer""' of type '""unsigned char [1000000]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_compress_stream_buffer_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  unsigned char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_state_compress_stream_buffer_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_compress_stream_buffer_get" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  result = (unsigned char *)(unsigned char *) ((arg1)->stream_buffer);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_unsigned_char, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_compress_stream_counter_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
   int ecode2 = 0 ;
-  float val3 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qlz_state_compress_stream_counter_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_compress_stream_counter_set" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "qlz_state_compress_stream_counter_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->stream_counter = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_compress_stream_counter_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_state_compress_stream_counter_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_compress_stream_counter_get" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  result =  ((arg1)->stream_counter);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_compress_hash_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  qlz_hash_compress *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qlz_state_compress_hash_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_compress_hash_set" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_qlz_hash_compress, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qlz_state_compress_hash_set" "', argument " "2"" of type '" "qlz_hash_compress [4096]""'"); 
+  } 
+  arg2 = reinterpret_cast< qlz_hash_compress * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)4096; ++ii) *(qlz_hash_compress *)&arg1->hash[ii] = *((qlz_hash_compress *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""hash""' of type '""qlz_hash_compress [4096]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_compress_hash_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  qlz_hash_compress *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_state_compress_hash_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_compress_hash_get" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  result = (qlz_hash_compress *)(qlz_hash_compress *) ((arg1)->hash);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_qlz_hash_compress, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_compress_hash_counter_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  unsigned char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qlz_state_compress_hash_counter_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_compress_hash_counter_set" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qlz_state_compress_hash_counter_set" "', argument " "2"" of type '" "unsigned char [4096]""'"); 
+  } 
+  arg2 = reinterpret_cast< unsigned char * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)4096; ++ii) *(unsigned char *)&arg1->hash_counter[ii] = *((unsigned char *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""hash_counter""' of type '""unsigned char [4096]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_compress_hash_counter_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  unsigned char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_state_compress_hash_counter_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_compress_hash_counter_get" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  result = (unsigned char *)(unsigned char *) ((arg1)->hash_counter);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_unsigned_char, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_qlz_state_compress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_qlz_state_compress")) SWIG_fail;
+  result = (qlz_state_compress *)new qlz_state_compress();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_qlz_state_compress, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_qlz_state_compress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_compress *arg1 = (qlz_state_compress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_qlz_state_compress",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_compress, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_qlz_state_compress" "', argument " "1"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_compress * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *qlz_state_compress_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_qlz_state_compress, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_qlz_state_decompress_stream_buffer_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_decompress *arg1 = (qlz_state_decompress *) 0 ;
+  unsigned char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qlz_state_decompress_stream_buffer_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_decompress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_decompress_stream_buffer_set" "', argument " "1"" of type '" "qlz_state_decompress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_decompress * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qlz_state_decompress_stream_buffer_set" "', argument " "2"" of type '" "unsigned char [1000000]""'"); 
+  } 
+  arg2 = reinterpret_cast< unsigned char * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)1000000; ++ii) *(unsigned char *)&arg1->stream_buffer[ii] = *((unsigned char *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""stream_buffer""' of type '""unsigned char [1000000]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_decompress_stream_buffer_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_decompress *arg1 = (qlz_state_decompress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  unsigned char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_state_decompress_stream_buffer_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_decompress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_decompress_stream_buffer_get" "', argument " "1"" of type '" "qlz_state_decompress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_decompress * >(argp1);
+  result = (unsigned char *)(unsigned char *) ((arg1)->stream_buffer);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_unsigned_char, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_decompress_stream_counter_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_decompress *arg1 = (qlz_state_decompress *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qlz_state_decompress_stream_counter_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_decompress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_decompress_stream_counter_set" "', argument " "1"" of type '" "qlz_state_decompress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_decompress * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "qlz_state_decompress_stream_counter_set" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  if (arg1) (arg1)->stream_counter = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_state_decompress_stream_counter_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_decompress *arg1 = (qlz_state_decompress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_state_decompress_stream_counter_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_decompress, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_state_decompress_stream_counter_get" "', argument " "1"" of type '" "qlz_state_decompress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_decompress * >(argp1);
+  result =  ((arg1)->stream_counter);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_qlz_state_decompress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_decompress *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_qlz_state_decompress")) SWIG_fail;
+  result = (qlz_state_decompress *)new qlz_state_decompress();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_qlz_state_decompress, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_qlz_state_decompress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  qlz_state_decompress *arg1 = (qlz_state_decompress *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_qlz_state_decompress",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_qlz_state_decompress, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_qlz_state_decompress" "', argument " "1"" of type '" "qlz_state_decompress *""'"); 
+  }
+  arg1 = reinterpret_cast< qlz_state_decompress * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *qlz_state_decompress_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_qlz_state_decompress, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_qlz_size_decompressed(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_size_decompressed",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_size_decompressed" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = qlz_size_decompressed((char const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_size_compressed(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_size_compressed",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_size_compressed" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  result = qlz_size_compressed((char const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_qlz_compress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  void *arg1 = (void *) 0 ;
+  char *arg2 = (char *) 0 ;
+  size_t arg3 ;
+  qlz_state_compress *arg4 = (qlz_state_compress *) 0 ;
+  int res1 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  size_t val3 ;
   int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  bool result;
+  PyObject * obj3 = 0 ;
+  size_t result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:isApprox",&obj0,&obj1,&obj2)) SWIG_fail;
-  ecode1 = SWIG_AsVal_float(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "isApprox" "', argument " "1"" of type '" "float""'");
-  } 
-  temp1 = static_cast< float >(val1);
-  arg1 = &temp1;
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "isApprox" "', argument " "2"" of type '" "float""'");
-  } 
-  temp2 = static_cast< float >(val2);
-  arg2 = &temp2;
-  ecode3 = SWIG_AsVal_float(obj2, &val3);
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:qlz_compress",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0,SWIG_as_voidptrptr(&arg1), 0, 0);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_compress" "', argument " "1"" of type '" "void const *""'"); 
+  }
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qlz_compress" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ecode3 = SWIG_AsVal_size_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "isApprox" "', argument " "3"" of type '" "float""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "qlz_compress" "', argument " "3"" of type '" "size_t""'");
   } 
-  arg3 = static_cast< float >(val3);
-  result = (bool)isApprox((float const &)*arg1,(float const &)*arg2,arg3);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  arg3 = static_cast< size_t >(val3);
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_qlz_state_compress, 0 |  0 );
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "qlz_compress" "', argument " "4"" of type '" "qlz_state_compress *""'"); 
+  }
+  arg4 = reinterpret_cast< qlz_state_compress * >(argp4);
+  result = qlz_compress((void const *)arg1,arg2,arg3,arg4);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
   return resultobj;
 fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_isApprox__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_qlz_decompress(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  float *arg1 = 0 ;
-  float *arg2 = 0 ;
-  float temp1 ;
-  float val1 ;
-  int ecode1 = 0 ;
-  float temp2 ;
-  float val2 ;
-  int ecode2 = 0 ;
+  char *arg1 = (char *) 0 ;
+  void *arg2 = (void *) 0 ;
+  qlz_state_decompress *arg3 = (qlz_state_decompress *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  bool result;
+  PyObject * obj2 = 0 ;
+  size_t result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:isApprox",&obj0,&obj1)) SWIG_fail;
-  ecode1 = SWIG_AsVal_float(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "isApprox" "', argument " "1"" of type '" "float""'");
-  } 
-  temp1 = static_cast< float >(val1);
-  arg1 = &temp1;
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "isApprox" "', argument " "2"" of type '" "float""'");
-  } 
-  temp2 = static_cast< float >(val2);
-  arg2 = &temp2;
-  result = (bool)isApprox((float const &)*arg1,(float const &)*arg2);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  if (!PyArg_ParseTuple(args,(char *)"OOO:qlz_decompress",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qlz_decompress" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = reinterpret_cast< char * >(buf1);
+  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qlz_decompress" "', argument " "2"" of type '" "void *""'"); 
+  }
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_qlz_state_decompress, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "qlz_decompress" "', argument " "3"" of type '" "qlz_state_decompress *""'"); 
+  }
+  arg3 = reinterpret_cast< qlz_state_decompress * >(argp3);
+  result = qlz_decompress((char const *)arg1,arg2,arg3);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
   return resultobj;
 fail:
+  if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_isApprox(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[4] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if (argc == 2) {
-    int _v;
-    {
-      int res = SWIG_AsVal_float(argv[0], NULL);
-      _v = SWIG_CheckState(res);
-    }
-    if (_v) {
-      {
-        int res = SWIG_AsVal_float(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        return _wrap_isApprox__SWIG_1(self, args);
-      }
-    }
-  }
-  if (argc == 3) {
-    int _v;
-    {
-      int res = SWIG_AsVal_float(argv[0], NULL);
-      _v = SWIG_CheckState(res);
-    }
-    if (_v) {
-      {
-        int res = SWIG_AsVal_float(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        {
-          int res = SWIG_AsVal_float(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
-        if (_v) {
-          return _wrap_isApprox__SWIG_0(self, args);
-        }
-      }
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'isApprox'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    isApprox(float const &,float const &,float)\n"
-    "    isApprox(float const &,float const &)\n");
-  return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_deltaPhi(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_qlz_get_setting(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  float *arg1 = 0 ;
-  float *arg2 = 0 ;
-  float temp1 ;
-  float val1 ;
+  int arg1 ;
+  int val1 ;
   int ecode1 = 0 ;
-  float temp2 ;
-  float val2 ;
-  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  float result;
+  int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:deltaPhi",&obj0,&obj1)) SWIG_fail;
-  ecode1 = SWIG_AsVal_float(obj0, &val1);
+  if (!PyArg_ParseTuple(args,(char *)"O:qlz_get_setting",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "deltaPhi" "', argument " "1"" of type '" "float""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "qlz_get_setting" "', argument " "1"" of type '" "int""'");
   } 
-  temp1 = static_cast< float >(val1);
-  arg1 = &temp1;
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "deltaPhi" "', argument " "2"" of type '" "float""'");
-  } 
-  temp2 = static_cast< float >(val2);
-  arg2 = &temp2;
-  result = (float)deltaPhi((float const &)*arg1,(float const &)*arg2);
-  resultobj = SWIG_From_float(static_cast< float >(result));
+  arg1 = static_cast< int >(val1);
+  result = (int)qlz_get_setting(arg1);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -3415,8 +4350,39 @@ fail:
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"isApprox", _wrap_isApprox, METH_VARARGS, NULL},
-	 { (char *)"deltaPhi", _wrap_deltaPhi, METH_VARARGS, NULL},
+	 { (char *)"qlz_hash_compress_offset_set", _wrap_qlz_hash_compress_offset_set, METH_VARARGS, NULL},
+	 { (char *)"qlz_hash_compress_offset_get", _wrap_qlz_hash_compress_offset_get, METH_VARARGS, NULL},
+	 { (char *)"new_qlz_hash_compress", _wrap_new_qlz_hash_compress, METH_VARARGS, NULL},
+	 { (char *)"delete_qlz_hash_compress", _wrap_delete_qlz_hash_compress, METH_VARARGS, NULL},
+	 { (char *)"qlz_hash_compress_swigregister", qlz_hash_compress_swigregister, METH_VARARGS, NULL},
+	 { (char *)"qlz_hash_decompress_offset_set", _wrap_qlz_hash_decompress_offset_set, METH_VARARGS, NULL},
+	 { (char *)"qlz_hash_decompress_offset_get", _wrap_qlz_hash_decompress_offset_get, METH_VARARGS, NULL},
+	 { (char *)"new_qlz_hash_decompress", _wrap_new_qlz_hash_decompress, METH_VARARGS, NULL},
+	 { (char *)"delete_qlz_hash_decompress", _wrap_delete_qlz_hash_decompress, METH_VARARGS, NULL},
+	 { (char *)"qlz_hash_decompress_swigregister", qlz_hash_decompress_swigregister, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_stream_buffer_set", _wrap_qlz_state_compress_stream_buffer_set, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_stream_buffer_get", _wrap_qlz_state_compress_stream_buffer_get, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_stream_counter_set", _wrap_qlz_state_compress_stream_counter_set, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_stream_counter_get", _wrap_qlz_state_compress_stream_counter_get, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_hash_set", _wrap_qlz_state_compress_hash_set, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_hash_get", _wrap_qlz_state_compress_hash_get, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_hash_counter_set", _wrap_qlz_state_compress_hash_counter_set, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_hash_counter_get", _wrap_qlz_state_compress_hash_counter_get, METH_VARARGS, NULL},
+	 { (char *)"new_qlz_state_compress", _wrap_new_qlz_state_compress, METH_VARARGS, NULL},
+	 { (char *)"delete_qlz_state_compress", _wrap_delete_qlz_state_compress, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_compress_swigregister", qlz_state_compress_swigregister, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_decompress_stream_buffer_set", _wrap_qlz_state_decompress_stream_buffer_set, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_decompress_stream_buffer_get", _wrap_qlz_state_decompress_stream_buffer_get, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_decompress_stream_counter_set", _wrap_qlz_state_decompress_stream_counter_set, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_decompress_stream_counter_get", _wrap_qlz_state_decompress_stream_counter_get, METH_VARARGS, NULL},
+	 { (char *)"new_qlz_state_decompress", _wrap_new_qlz_state_decompress, METH_VARARGS, NULL},
+	 { (char *)"delete_qlz_state_decompress", _wrap_delete_qlz_state_decompress, METH_VARARGS, NULL},
+	 { (char *)"qlz_state_decompress_swigregister", qlz_state_decompress_swigregister, METH_VARARGS, NULL},
+	 { (char *)"qlz_size_decompressed", _wrap_qlz_size_decompressed, METH_VARARGS, NULL},
+	 { (char *)"qlz_size_compressed", _wrap_qlz_size_compressed, METH_VARARGS, NULL},
+	 { (char *)"qlz_compress", _wrap_qlz_compress, METH_VARARGS, NULL},
+	 { (char *)"qlz_decompress", _wrap_qlz_decompress, METH_VARARGS, NULL},
+	 { (char *)"qlz_get_setting", _wrap_qlz_get_setting, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
@@ -3424,15 +4390,47 @@ static PyMethodDef SwigMethods[] = {
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_p_unsigned_char = {"_p_p_unsigned_char", "unsigned char **", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_qlz_hash_compress = {"_p_qlz_hash_compress", "qlz_hash_compress *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_qlz_hash_decompress = {"_p_qlz_hash_decompress", "qlz_hash_decompress *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_qlz_state_compress = {"_p_qlz_state_compress", "qlz_state_compress *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_qlz_state_decompress = {"_p_qlz_state_decompress", "qlz_state_decompress *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "ui32 *|unsigned int *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_short = {"_p_unsigned_short", "unsigned short *|ui16 *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
+  &_swigt__p_p_unsigned_char,
+  &_swigt__p_qlz_hash_compress,
+  &_swigt__p_qlz_hash_decompress,
+  &_swigt__p_qlz_state_compress,
+  &_swigt__p_qlz_state_decompress,
+  &_swigt__p_unsigned_char,
+  &_swigt__p_unsigned_int,
+  &_swigt__p_unsigned_short,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_unsigned_char[] = {  {&_swigt__p_p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_qlz_hash_compress[] = {  {&_swigt__p_qlz_hash_compress, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_qlz_hash_decompress[] = {  {&_swigt__p_qlz_hash_decompress, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_qlz_state_compress[] = {  {&_swigt__p_qlz_state_compress, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_qlz_state_decompress[] = {  {&_swigt__p_qlz_state_decompress, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_unsigned_short[] = {  {&_swigt__p_unsigned_short, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
+  _swigc__p_p_unsigned_char,
+  _swigc__p_qlz_hash_compress,
+  _swigc__p_qlz_hash_decompress,
+  _swigc__p_qlz_state_compress,
+  _swigc__p_qlz_state_decompress,
+  _swigc__p_unsigned_char,
+  _swigc__p_unsigned_int,
+  _swigc__p_unsigned_short,
 };
 
 
@@ -4123,6 +5121,13 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
+  SWIG_Python_SetConstant(d, "QLZ_COMPRESSION_LEVEL",SWIG_From_int(static_cast< int >(3)));
+  SWIG_Python_SetConstant(d, "QLZ_STREAMING_BUFFER",SWIG_From_int(static_cast< int >(1000000)));
+  SWIG_Python_SetConstant(d, "QLZ_VERSION_MAJOR",SWIG_From_int(static_cast< int >(1)));
+  SWIG_Python_SetConstant(d, "QLZ_VERSION_MINOR",SWIG_From_int(static_cast< int >(5)));
+  SWIG_Python_SetConstant(d, "QLZ_VERSION_REVISION",SWIG_From_int(static_cast< int >(0)));
+  SWIG_Python_SetConstant(d, "QLZ_POINTERS",SWIG_From_int(static_cast< int >(16)));
+  SWIG_Python_SetConstant(d, "QLZ_HASH_VALUES",SWIG_From_int(static_cast< int >(4096)));
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else

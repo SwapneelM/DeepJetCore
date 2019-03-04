@@ -9,7 +9,13 @@ clean:
 	rm -rf DeepJetCore.egg-info/ build/ dist/ && make clean -C DeepJetCore/compiled
 
 install:
-	python setup.py build install
+	python setup.py install
+
+build:
+	python setup.py build
+
+upload:
+	python setup.py sdist upload
 
 rebuild:
 	make -C DeepJetCore/compiled

@@ -8,7 +8,7 @@ from array import array
 import logging
 
 def setTreeName(name):
-    from DeepJetCore.compiled import c_meanNormZeroPad
+    import c_meanNormZeroPad
     c_meanNormZeroPad.setTreeName(name)
     
 
@@ -24,7 +24,7 @@ def produceWeigths(Tuple,nameX,nameY,bins,classes=[],normed=False):
     nameY and classes. The returned weight vector will flatten the Tuple in a 2D plane nameX,nameY for each 
     class (e.g. is B-quark)
 
-    nameX,nameY: names of the fiels that containt the variables to flattedn (usually eta/Pt)
+    nameX,nameY: names of the fields that contain the variables to flatten (usually eta/Pt)
 
     bins: are the bins used to flatten the distributions. Please use the syntax as in numpy.histogram2d
 
@@ -93,8 +93,8 @@ def produceWeigths(Tuple,nameX,nameY,bins,classes=[],normed=False):
 
 def meanNormProd(Tuple):
     """
-    This function makes a reacarray with the same fields (branches in root talk) as the input tree. The recarray has only two entries, the mean [0] and the st. dev. [1] for each field. If an field was an array the mean of all entries is taken. This is to be used to mean normalize the the input features to ML for faster convergence.
-    comment: done seldomly, no need for a quicker solution.
+    This function makes a recarray with the same fields (branches in root talk) as the input tree. The recarray has only two entries, the mean [0] and the st. dev. [1] for each field. If an field was an array the mean of all entries is taken. This is to be used to mean normalize the the input features to ML for faster convergence.
+    comment: done rarely, no need for a quicker solution.
     TO DO: we need to add a parser to JSON to interface to C++ or store straight a C++ map as well.
    
     """
@@ -214,7 +214,7 @@ def MakeBox(Tuples,nameX,nameY,binX,binY,nMaxObj):
             if not array[binx][biny][0]*(nInput+1) >= nMax:
                 for PFindex , varname in enumerate(BranchList):
                     if(varname==nameX):
-                    	# this removes the bin boundary
+                        # this removes the bin boundary
                         array[binx][biny][int(array[binx][biny][0]*nInput)+PFindex+1] = jet[nameX][index]-binX[binx]
                         #   ListSpare[binx][biny][0][int(array[binx][biny][0]*nInput)+PFindex+1] = jet[nameX][index]-binX[binx]
                         
@@ -280,7 +280,7 @@ def MeanNormZeroPadBinned(
         ):
     '''Takes too long to run the binning twice, run it only once and compute at the same time
     both the binned and the summed variables'''
-    from DeepJetCore.compiled import c_meanNormZeroPad
+    import c_meanNormZeroPad
     MeanNormTuple, inbranches, nMax = binned_info
     means=[]
     norms=[]
@@ -326,7 +326,7 @@ def createDensityMap(Filename_in, MeanNormTuple, inbranch,nevents, dimension1, d
     counter, offset=0,weightbranch=""
         ):
     
-    from DeepJetCore.compiled import c_meanNormZeroPad
+    import c_meanNormZeroPad
     
     norm=1.#MeanNormTuple[inbranch][1]
 
@@ -348,7 +348,7 @@ def createCountMap(Filename_in, MeanNormTuple,nevents, dimension1, dimension2,
     counter, offset=0,weightbranch=""
         ):
     
-    from DeepJetCore.compiled import c_meanNormZeroPad
+    import c_meanNormZeroPad
     
     
     norm=1.#MeanNormTuple[inbranch][1]
@@ -377,7 +377,7 @@ def createDensity(Filename_in,
                         counterbranch,
                         offsets=None):
     
-    from DeepJetCore.compiled import c_meanNormZeroPad
+    import c_meanNormZeroPad
     
     layerbranch=''
     maxlayers=1
@@ -429,7 +429,7 @@ def createDensityLayers(Filename_in,
                         counterbranch,
                         scales=None):
     
-    from DeepJetCore.compiled import c_meanNormZeroPad
+    import c_meanNormZeroPad
     
     if not scales:
         norms = [1 for x in range(len(inbranches))]
@@ -466,7 +466,7 @@ def createDensityLayers(Filename_in,
  
 def MeanNormZeroPadParticles(Filename_in,MeanNormTuple,inbranches,nMax,nevents):
   
-    from DeepJetCore.compiled import c_meanNormZeroPad
+    import c_meanNormZeroPad
     
     array = numpy.zeros((nevents,nMax,len(inbranches)) , dtype='float32')
     
@@ -496,7 +496,7 @@ def MeanNormZeroPad(Filename_in,MeanNormTuple,inbranches_listlist,nMaxslist,neve
     New (Jan): due to performance reasons this part has been put in a compiled C++ module that is called here
     """
     import copy
-    from DeepJetCore.compiled import c_meanNormZeroPad #pre-compiled module
+    import c_meanNormZeroPad #pre-compiled module
     
     inbranches_listlist=copy.deepcopy(inbranches_listlist)
     nMaxslist=copy.deepcopy(nMaxslist)

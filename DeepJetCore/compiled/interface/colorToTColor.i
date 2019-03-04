@@ -1,4 +1,3 @@
-
 %module colorToTColor
 %{ 
     #define SWIG_FILE_WITH_INIT

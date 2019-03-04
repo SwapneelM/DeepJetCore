@@ -41,7 +41,7 @@ ifeq ($(UNAME_S),Darwin)
     LINUXADD=""
 endif
 
-all: libquicklz.so $(HELPERS_OBJ_FILES) $(SWIG_OBJ_FILES) $(HELPERS_SHARED_LIBS) $(MODULES_OBJ_FILES) $(MODULES_SHARED_LIBS)
+all: $(HELPERS_OBJ_FILES) $(SWIG_OBJ_FILES) $(HELPERS_SHARED_LIBS) $(MODULES_OBJ_FILES) $(MODULES_SHARED_LIBS)
 # all: libquicklz.so obj/%.o lib/%.so %.o %.so
 
 # quicklz for compression
