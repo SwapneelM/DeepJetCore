@@ -1,12 +1,86 @@
-DeepJetCore
-===========
+DeepJetCore: Training and Evaluation of Deep Neural Networks for High-energy Physics
+====================================================================================
 
-This is the README file for the project.
+* For overview and technical details, refer to the `presentations for DeepJet`_.
 
-Set of scripts used within the Experimental Physics Group 
-in the CMS Experiment at CERN. Install as a pip package 
-in a virtual environment such as one provided by Anaconda. 
-Refer to the `README <https://github.com/DL4Jets/DeepJetCore>`_ 
-for installation and usage instructions
+.. _presentations for DeepJet: https://drive.google.com/drive/folders/1l8Hu34hMYNc-YdgpCoAuqMzQ-qa5eCSJ?usp=sharing
 
-`The source for this project is available on Github <https://github.com/pypa/sampleproject>`_.
+* For the bleeding-edge version of the package please refer the updated Documentation_.
+
+.. _Documentation: https://github.com/SwapneelM/DeepJetCore/blob/python-package/PYPKG.md
+
+This package provides the basic functions for out-of-memory training, resampling, and basic evaluation. 
+
+The actual training data structures and DNN models must be defined in an additional user package. The data structures (defining the structure of the training data as numpy arrays), must inherit from the ``TrainData`` class, and must be reachable in the ``$PYTHONPATH`` as ::
+        from datastructure import *
+
+A script to set it up will be provided eventually. For reference, please see: modules_.
+
+.. _modules: https://github.com/DL4Jets/DeepJet/tree/master/modules
+
+
+Setup python packages (CERN)
+------------------------------
+
+**It is essential to perform all these steps on lxplus7. Simple ssh to 'lxplus7' instead of 'lxplus'**
+
+
+Pre-Installation: Anaconda setup (only once)
+--------------------------------------------
+
+* Download miniconda3
+
+::
+        $ cd <afs work directory: you need some disk space for this!>
+        $ wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        $ bash Miniconda3-latest-Linux-x86_64.sh
+
+
+Please follow the installation process. If you don't know what an option does, please answer 'yes'.
+After installation, you have to log out and log in again for changes to take effect.
+If you don't use bash, you might have to add the conda path to your .rc file
+
+::
+        $ export PATH="<your miniconda directory>/miniconda3/bin:$PATH"
+
+
+This has to be only done once.
+
+
+Installation
+------------
+
+::
+        $ mkdir <your working dir>
+        $ cd <your working dir>
+        $ git clone https://github.com/DL4Jets/DeepJetCore
+        $ cd DeepJetCore/environment
+        $ ./setupEnv.sh deepjetLinux3.conda
+
+For enabling gpu support add ``gpu`` as an additional option to the last command.
+This will take a while. Please log out and in again once the installation is finised.
+
+
+Compiling DeepJetCore
+---------------------
+
+Once the installation is successful, the DeepJetCore tools need to be compiled.
+
+::
+        $ cd <your working dir>
+        $ cd DeepJetCore
+        $ source lxplus_env.sh / gpu_env.sh
+        $ cd compiled
+        $ make -j4
+
+
+After successfully compiling the tools, log out and log back in. The environment is set up.
+
+
+Usage
+---------
+
+* For a practical example application of the DeepJetCore package, please refer to DeepJet_.
+
+.. _DeepJet: https://github.com/DL4Jets/DeepJet
+

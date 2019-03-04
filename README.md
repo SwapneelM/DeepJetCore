@@ -1,4 +1,8 @@
+#### Updates
 
+- For overview and technical details, refer to the [presentations for DeepJet](https://drive.google.com/drive/folders/1l8Hu34hMYNc-YdgpCoAuqMzQ-qa5eCSJ?usp=sharing)
+
+- For the bleeding-edge version of the package please refer the [updated Documentation](https://github.com/SwapneelM/DeepJetCore/blob/python-package/PYPKG.md)
 
 DeepJetCore: Package for training and evaluation of deep neural networks for HEP
 ===============================================================================
@@ -13,7 +17,7 @@ Setup python packages (CERN)
 ==========
 It is essential to perform all these steps on lxplus7. Simple ssh to 'lxplus7' instead of 'lxplus'
 
-Pre-Installtion: Anaconda setup (only once)
+Pre-Installation: Anaconda setup (only once)
 Download miniconda3
 ```
 cd <afs work directory: you need some disk space for this!>
