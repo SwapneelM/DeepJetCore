@@ -1,4 +1,4 @@
-name: deepjetpkg-test
+name: deepjetpkg
 channels:
   - NLeSC
   - conda-forge
