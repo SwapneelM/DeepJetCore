@@ -88,7 +88,6 @@ dependencies:
     - backports.weakref==1.0.post1
     - cycler==0.10.0
     - cython==0.28.4
-    - deepjetcore==0.0.4
     - enum34==1.1.6
     - funcsigs==1.0.2
     - functools32==3.2.3.post2
@@ -112,4 +111,3 @@ dependencies:
     - tensorflow==1.9.0
     - termcolor==1.1.0
     - werkzeug==0.14.1
-prefix: /afs/cern.ch/work/s/smehta/miniconda3/envs/deepjetpkg
