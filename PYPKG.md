@@ -26,6 +26,8 @@ conda update -n <name_of_default_environment> conda
     $ bash Miniconda3-latest-Linux-x86_64.sh
 ```
 
+* You need to ``source ~/.bashrc`` or log out and log back in for the changes to take effect.
+
 * Once Anaconda is setup you can work with virtual environments as and when you like, cloning or creating new ones. In this case, we clone an environment from a file in order to use DeepJet on lxplus7.
 
 ```
