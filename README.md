@@ -42,6 +42,8 @@ git clone https://github.com/DL4Jets/DeepJetCore
 cd DeepJetCore/environment
 ./setupEnv.sh deepjetLinux3.conda
 ```
+**If you are using the [bleeding edge](https://github.com/SwapneelM/DeepJetCore/blob/python-package/PYPKG.md) version DO NOT run the following commands.**
+
 For enabling gpu support add 'gpu' as an additional option to the last command.
 This will take a while. Please log out and in again once the installation is finised.
 

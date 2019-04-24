@@ -7,9 +7,17 @@ This is the latest (development) release of the DeepJetCore Framework.
 
 * While installing on Scientific Linux 7 (available on lxplus7 at CERN), these are the steps you can follow. Ensure you have the correct OS before proceeding.
 
-### Anaconda Setup
+### Anaconda/Miniconda Setup
 
-* Note: This will require disk space, especially if you work with multiple conda environments so ensure you have enough disk space (at least 12 GB).
+* Anaconda vs. Miniconda: There are differences in older versions of anaconda and miniconda in terms of activating the environment and the name of the default environment that both the package managers use. In Anaconda, the default environment is called `root` while in Miniconda, it is labeled as `base`. So depending on what you have, first run:
+
+```
+conda update -n <name_of_default_environment> conda
+```
+
+* Please note that the successful execution of the `source pypkg_env.sh` command will be dependent on having the latest (>= 4.6.1) version of Anaconda/Miniconda installed.
+
+* Note: The conda environment will require disk space, especially if you work with multiple conda environments so ensure you have enough disk space (at least 12 GB).
 
 ```
     $ mkdir <new-directory> 
@@ -78,7 +86,7 @@ This is the latest (development) release of the DeepJetCore Framework.
 * Fix a bug with the original root environment script that was installed from the NLeSC channel.
 
 ```
-    $ cp activateROOT.sh  $CONDA_PREFIX/etc/conda/activate.d/activateROOT.sh  
+    $ cp DeepJetCore/environment/activateROOT.sh  $CONDA_PREFIX/etc/conda/activate.d/activateROOT.sh  
 ```
 
 * You will need to set some environment variables each time you activate the virtual environment which are provided in the file `pypkg_env.sh`. We have a script which does this for you so all you need to do is the following:
