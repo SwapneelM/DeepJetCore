@@ -62,18 +62,6 @@ conda update -n <name_of_default_environment> conda
 
 ```
     $ git clone -b python-package https://github.com/SwapneelM/DeepJet
-```
-
-* Note: The Python package (DeepJetCore==0.0.5) is added as a dependency in the environment file itself so you should not have to install it separately, but in case PyPi is slow (>30s)/fails in downloading the package, remove the line with the package from the environment file and re-install the same environment. 
-[PyPi isn't working out at the moment so just clone it until the changes propagate to PyPi]
-
-* **Personally, I would recommend you clone the repository to follow what is happening and better understand the functioning of the library.**
-
-* These are the steps to follow to separately install DeepJetCore:
-
-- Stay in the same root directory as the one where you cloned DeepJet.
-
-```
     $ git clone -b python-package https://github.com/SwapneelM/DeepJetCore/
     $ cd DeepJet 
     $ source pypkg_env.sh
